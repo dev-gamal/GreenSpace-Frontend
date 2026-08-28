@@ -3,7 +3,9 @@ import { useAuth } from "./context/AuthContext";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
+import AdminDashboard from './pages/admin/AdminDashboard';
 import ProtectedRoute from "./components/ProtectedRoute";
+import AdminRoute from './components/AdminRoute';
 
 function App() {
   const { user } = useAuth();
@@ -26,6 +28,15 @@ function App() {
             <Home />
           </ProtectedRoute>
         }
+      />
+
+      <Route 
+        path="/admin" 
+        element={
+          <AdminRoute>
+            <AdminDashboard />
+          </AdminRoute>
+        } 
       />
 
       <Route path="*" element={<Navigate to="/" replace />} />
