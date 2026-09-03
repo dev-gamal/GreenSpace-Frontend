@@ -15,7 +15,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [gardens, setGardens] = useState([]);
 
-const isOwner = user?.role === 'OWNER';
+  const isOwner = user?.role === 'OWNER';
 
   useEffect(() => {
     const fetchGardens = async () => {
@@ -61,12 +61,14 @@ const isOwner = user?.role === 'OWNER';
             <button className="hidden text-gray-500 md:flex hover:text-gray-900">
               <Bell size={20} />
             </button>
-            <div className="flex items-center gap-2">
+
+            <Link to="/dashboard" className="flex items-center gap-2 p-1 pr-2 transition-colors rounded-full hover:bg-white/40">
               <span className="hidden text-sm font-medium md:block">{user.firstName}</span>
-              <div className="flex items-center justify-center w-8 h-8 text-white bg-green-700 border rounded-full">
+              <div className="flex items-center justify-center w-8 h-8 text-white bg-green-700 border border-green-200 rounded-full shadow-sm">
                 {user.firstName?.charAt(0).toUpperCase()}
               </div>
-            </div>
+            </Link>
+
             <Button variant="ghost" size="icon" onClick={logout} className="text-red-500 hover:text-red-700 hover:bg-red-50">
               <LogOut size={18} />
             </Button>
@@ -225,7 +227,6 @@ const isOwner = user?.role === 'OWNER';
         )}
       </main>
 
-      {/* 4. Footer Desktop */}
       <footer className="hidden py-8 border-t bg-gray-50 md:block">
         <div className="flex flex-col items-center justify-between px-4 mx-auto text-sm text-gray-500 container md:flex-row">
           <div className="flex items-center gap-2 mb-4 md:mb-0">
@@ -240,7 +241,6 @@ const isOwner = user?.role === 'OWNER';
         </div>
       </footer>
 
-      {/* 5. Navigation Mobile */}
       <nav className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-3 bg-white border-t md:hidden pb-safe">
         <Link to="/" className="flex flex-col items-center text-green-700">
           <HomeIcon size={24} />
@@ -258,7 +258,8 @@ const isOwner = user?.role === 'OWNER';
           <MessageSquare size={24} />
           <span className="text-[10px] mt-1 font-medium">Demandes</span>
         </Link>
-        <Link to="/profil" className="flex flex-col items-center text-gray-400 hover:text-green-700">
+
+        <Link to="/dashboard" className="flex flex-col items-center text-gray-400 hover:text-green-700">
           <User size={24} />
           <span className="text-[10px] mt-1 font-medium">Profil</span>
         </Link>
