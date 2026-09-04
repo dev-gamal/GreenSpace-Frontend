@@ -16,6 +16,7 @@ export default function Home() {
   const [gardens, setGardens] = useState([]);
 
   const isOwner = user?.role === 'OWNER';
+  const isOwner = user?.role === 'OWNER';
 
   useEffect(() => {
     const fetchGardens = async () => {
