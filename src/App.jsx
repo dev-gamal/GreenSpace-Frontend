@@ -14,7 +14,6 @@ function App() {
 
   return (
     <Routes>
-      {/* Routes d'authentification */}
       <Route
         path="/login"
         element={user ? <Navigate to="/" replace /> : <Login />}
@@ -24,7 +23,6 @@ function App() {
         element={user ? <Navigate to="/" replace /> : <Register />}
       />
 
-      {/* Landing Page (Home) - Sans Layout, donc SANS Sidebar */}
       <Route
         path="/"
         element={
@@ -34,7 +32,6 @@ function App() {
         }
       />
 
-      {/* Dashboard - AVEC Layout, donc AVEC Sidebar, Navbar globale et BottomNav */}
       <Route
         path="/dashboard"
         element={
@@ -46,7 +43,6 @@ function App() {
         }
       />
 
-      {/* Interface Administrateur */}
       <Route 
         path="/admin" 
         element={
@@ -56,7 +52,6 @@ function App() {
         } 
       />
 
-      {/* Redirection de secours */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

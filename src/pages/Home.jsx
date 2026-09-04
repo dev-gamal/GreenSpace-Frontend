@@ -16,7 +16,6 @@ export default function Home() {
   const [gardens, setGardens] = useState([]);
 
   const isOwner = user?.role === 'OWNER';
-  const isOwner = user?.role === 'OWNER';
 
   useEffect(() => {
     const fetchGardens = async () => {
@@ -91,7 +90,6 @@ export default function Home() {
           </div>
         </header>
 
-        {/* Contenu du Hero */}
         <div className="relative z-10 flex flex-col justify-center h-full max-w-4xl px-4 mx-auto container md:px-8 pt-10">
           <span className="inline-block px-4 py-1.5 mb-6 text-xs font-bold tracking-widest text-green-300 uppercase rounded-full bg-green-950/60 backdrop-blur-md w-max">
             Community Ecosystem
@@ -125,7 +123,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Carte des Statistiques (Positionnée à cheval sur le bord inférieur) */}
         <div className="absolute left-0 right-0 hidden -bottom-16 md:block container mx-auto px-8 z-20">
           <Card className="p-8 shadow-2xl rounded-3xl border-none bg-white">
             <div className="flex flex-col items-center justify-between gap-8 md:flex-row md:gap-4">
