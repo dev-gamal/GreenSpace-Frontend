@@ -2,12 +2,13 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Home from "./pages/Home"; 
-import Dashboard from "./pages/Dashboard"; 
-import Layout from "./components/layout/Layout"; 
-import AdminDashboard from './pages/admin/AdminDashboard';
+import Home from "./pages/Home";
+import Dashboard from "./pages/Dashboard";
+import LandDetails from "./pages/LandDetails";
+import Layout from "./components/layout/Layout";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
-import AdminRoute from './components/AdminRoute';
+import AdminRoute from "./components/AdminRoute";
 
 function App() {
   const { user } = useAuth();
@@ -43,13 +44,24 @@ function App() {
         }
       />
 
-      <Route 
-        path="/admin" 
+      <Route
+        path="/garden/:id"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <LandDetails />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/admin"
         element={
           <AdminRoute>
             <AdminDashboard />
           </AdminRoute>
-        } 
+        }
       />
 
       <Route path="*" element={<Navigate to="/" replace />} />
