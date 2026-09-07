@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Search, Bell, MapPin, Droplets, Maximize2, 
-  Heart, Users, Home as HomeIcon, Compass, ShoppingBag, 
-  MessageSquare, User, Leaf, LogOut, PlusCircle, Sprout 
+  Heart, Users, Home as HomeIcon, Compass, 
+  User, Leaf, LogOut, PlusCircle, Sprout 
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -61,9 +61,8 @@ export default function Home() {
 
             <nav className="items-center hidden gap-8 text-sm font-medium text-gray-800 md:flex">
               <Link to="/" className="font-bold text-green-800">Home</Link>
-              <Link to="/recherche" className="hover:text-green-800">Explore</Link>
-              <Link to="/marche" className="hover:text-green-800">Market</Link>
-              <Link to="/reservations" className="hover:text-green-800">Messages</Link>
+              <Link to="/explore" className="hover:text-green-800">Explore</Link>
+              <Link to="/dashboard" className="hover:text-green-800">Dashboard</Link>
             </nav>
 
             <div className="flex items-center gap-4">
@@ -110,14 +109,14 @@ export default function Home() {
               </Button>
             ) : (
               <Button asChild size="lg" className="h-14 gap-2 px-8 text-base font-bold text-white bg-green-700 rounded-full hover:bg-green-800 shadow-lg">
-                <Link to="/recherche">
+                <Link to="/explore">
                   <Sprout size={20} /> Find a Garden
                 </Link>
               </Button>
             )}
             <Button asChild variant="outline" size="lg" className="h-14 gap-2 px-8 text-base font-bold text-white border-white/50 bg-white/10 rounded-full hover:bg-white/20 backdrop-blur-md hover:text-white shadow-lg">
-              <Link to="/marche">
-                Offer My Land
+              <Link to="/explore">
+                Explore Gardens
               </Link>
             </Button>
           </div>
@@ -278,21 +277,13 @@ export default function Home() {
           <HomeIcon size={24} />
           <span className="text-[10px] mt-1 font-medium">Home</span>
         </Link>
-        <Link to="/recherche" className="flex flex-col items-center text-gray-400 hover:text-green-700">
+        <Link to="/explore" className="flex flex-col items-center text-gray-400 hover:text-green-700">
           <Compass size={24} />
           <span className="text-[10px] mt-1 font-medium">Explore</span>
         </Link>
-        <Link to="/marche" className="flex flex-col items-center text-gray-400 hover:text-green-700">
-          <ShoppingBag size={24} />
-          <span className="text-[10px] mt-1 font-medium">Market</span>
-        </Link>
-        <Link to="/reservations" className="flex flex-col items-center text-gray-400 hover:text-green-700">
-          <MessageSquare size={24} />
-          <span className="text-[10px] mt-1 font-medium">Messages</span>
-        </Link>
         <Link to="/dashboard" className="flex flex-col items-center text-gray-400 hover:text-green-700">
           <User size={24} />
-          <span className="text-[10px] mt-1 font-medium">Profile</span>
+          <span className="text-[10px] mt-1 font-medium">Dashboard</span>
         </Link>
       </nav>
     </div>

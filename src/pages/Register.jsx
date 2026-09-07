@@ -101,8 +101,8 @@ export default function Register() {
               {...register("role")} 
               className="w-full p-2 mt-1 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
             >
-              <option value="ROLE_JARDINIER">Gardener looking for a space</option>
-              <option value="ROLE_PROPRIETAIRE">Property owner offering a space</option>
+              <option value="GARDENER">Gardener looking for a space</option>
+              <option value="OWNER">Property owner offering a space</option>
             </select>
             <p className="mt-1 text-sm text-red-500">{errors.role?.message}</p>
           </div>
