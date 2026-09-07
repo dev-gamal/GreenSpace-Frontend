@@ -5,10 +5,10 @@ import Register from "./pages/Register";
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import LandDetails from "./pages/LandDetails";
+import Explore from "./pages/Explore";
 import Layout from "./components/layout/Layout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
-import AdminRoute from "./components/AdminRoute";
 
 function App() {
   const { user } = useAuth();
@@ -34,12 +34,29 @@ function App() {
       />
 
       <Route
-        path="/dashboard"
+        path="/explore"
         element={
           <ProtectedRoute>
             <Layout>
-              <Dashboard />
+              <Explore />
             </Layout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            {user?.role === "ADMIN" ? (
+              <Layout>
+                <AdminDashboard />
+              </Layout>
+            ) : (
+              <Layout>
+                <Dashboard />
+              </Layout>
+            )}
           </ProtectedRoute>
         }
       />
@@ -52,15 +69,6 @@ function App() {
               <LandDetails />
             </Layout>
           </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/admin"
-        element={
-          <AdminRoute>
-            <AdminDashboard />
-          </AdminRoute>
         }
       />
 
