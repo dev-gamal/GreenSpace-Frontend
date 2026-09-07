@@ -1,14 +1,13 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, List, CalendarCheck, Settings } from 'lucide-react';
+import { LayoutDashboard, List, Settings } from 'lucide-react';
 
 export default function Sidebar() {
   const location = useLocation();
 
   const menu = [
-    { name: 'My Dashboard', icon: <LayoutDashboard size={20} />, path: '/' },
-    { name: 'My Listings', icon: <List size={20} />, path: '/listings' },
-    { name: 'Bookings', icon: <CalendarCheck size={20} />, path: '/bookings', badge: 3 },
-    { name: 'Settings', icon: <Settings size={20} />, path: '/settings' },
+    { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard' },
+    { name: 'Explore', icon: <List size={20} />, path: '/explore' },
+    { name: 'Home', icon: <Settings size={20} />, path: '/' },
   ];
 
   return (

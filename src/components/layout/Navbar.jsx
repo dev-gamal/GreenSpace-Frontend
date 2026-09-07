@@ -20,8 +20,7 @@ export default function Navbar() {
         <nav className="hidden gap-8 text-sm font-medium text-gray-500 md:flex">
           <Link to="/" className="text-green-700 font-semibold">Home</Link>
           <Link to="/explore" className="hover:text-green-700">Explore</Link>
-          <Link to="/market" className="hover:text-green-700">Market</Link>
-          <Link to="/messages" className="hover:text-green-700">Messages</Link>
+          <Link to="/dashboard" className="hover:text-green-700">Dashboard</Link>
         </nav>
 
         {/* Actions & Profil */}

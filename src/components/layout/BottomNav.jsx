@@ -1,14 +1,12 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Compass, ShoppingBag, MessageSquare, User } from 'lucide-react';
+import { Home, Compass, User } from 'lucide-react';
 
 export default function BottomNav() {
   const location = useLocation();
   const navItems = [
     { name: 'Home', icon: <Home size={22} />, path: '/' },
     { name: 'Explore', icon: <Compass size={22} />, path: '/explore' },
-    { name: 'Market', icon: <ShoppingBag size={22} />, path: '/market' },
-    { name: 'Messages', icon: <MessageSquare size={22} />, path: '/messages' },
-    { name: 'Profile', icon: <User size={22} />, path: '/profile' },
+    { name: 'Dashboard', icon: <User size={22} />, path: '/dashboard' },
   ];
 
   return (
