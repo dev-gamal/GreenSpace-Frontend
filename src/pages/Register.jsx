@@ -11,6 +11,21 @@ const schema = yup.object({
   email: yup.string().email('Invalid email address').required('The email is required'),
   password: yup.string().min(6, 'The password must contain at least 6 characters').required('The password is required'),
   role: yup.string().oneOf(['OWNER', 'GARDENER'], 'Please select a role').required('The role is required'),
+  phoneNumber: yup.string().when('role', {
+    is: 'OWNER',
+    then: (schema) => schema.required('Phone number is required for owners'),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+  city: yup.string().when('role', {
+    is: 'OWNER',
+    then: (schema) => schema.required('City is required for owners'),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+  postalCode: yup.string().when('role', {
+    is: 'OWNER',
+    then: (schema) => schema.required('Postal code is required for owners'),
+    otherwise: (schema) => schema.notRequired(),
+  }),
 }).required();
 
 export default function Register() {
@@ -18,10 +33,12 @@ export default function Register() {
   const navigate = useNavigate();
   const [apiError, setApiError] = useState('');
 
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
+  const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm({
     resolver: yupResolver(schema),
     defaultValues: { role: 'GARDENER' }
   });
+
+  const selectedRole = watch('role');
 
   const onSubmit = async (data) => {
     try {
@@ -106,6 +123,48 @@ export default function Register() {
             </select>
             <p className="mt-1 text-sm text-red-500">{errors.role?.message}</p>
           </div>
+
+          {/* Extra fields shown for OWNER role */}
+          {selectedRole === 'OWNER' && (
+            <div className="p-4 space-y-4 border border-green-200 rounded-lg bg-green-50/50">
+              <p className="text-sm font-medium text-green-800">Owner information</p>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Phone Number</label>
+                <input 
+                  type="tel" 
+                  {...register("phoneNumber")} 
+                  placeholder="e.g. +212 6XX-XXXXXX"
+                  className={`w-full p-2 mt-1 border rounded-md focus:ring-green-500 focus:border-green-500 ${errors.phoneNumber ? 'border-red-500' : 'border-gray-300'}`}
+                />
+                <p className="mt-1 text-sm text-red-500">{errors.phoneNumber?.message}</p>
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">City</label>
+                  <input 
+                    type="text" 
+                    {...register("city")} 
+                    placeholder="e.g. Casablanca"
+                    className={`w-full p-2 mt-1 border rounded-md focus:ring-green-500 focus:border-green-500 ${errors.city ? 'border-red-500' : 'border-gray-300'}`}
+                  />
+                  <p className="mt-1 text-sm text-red-500">{errors.city?.message}</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Postal Code</label>
+                  <input 
+                    type="text" 
+                    {...register("postalCode")} 
+                    placeholder="e.g. 20000"
+                    className={`w-full p-2 mt-1 border rounded-md focus:ring-green-500 focus:border-green-500 ${errors.postalCode ? 'border-red-500' : 'border-gray-300'}`}
+                  />
+                  <p className="mt-1 text-sm text-red-500">{errors.postalCode?.message}</p>
+                </div>
+              </div>
+            </div>
+          )}
 
           <button 
             type="submit" 

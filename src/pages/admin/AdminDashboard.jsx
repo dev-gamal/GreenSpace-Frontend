@@ -6,25 +6,25 @@ import api from '../../api/axiosConfig';
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState(null);
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const [users, setUsers] = useState([
-    { id: 1, name: 'Gamal Badie', email: 'gamal@test.com', role: 'GARDENER', isBlocked: false },
-    { id: 2, name: 'Laarbi Hachemi', email: 'laarbi@test.com', role: 'OWNER', isBlocked: true },
-  ]);
-
   useEffect(() => {
-    const fetchStats = async () => {
+    const fetchData = async () => {
       try {
-        const response = await api.get('/admin/stats');
-        setStats(response.data);
+        const [statsRes, usersRes] = await Promise.all([
+          api.get('/admin/stats'),
+          api.get('/admin/users'),
+        ]);
+        setStats(statsRes.data);
+        setUsers(usersRes.data);
       } catch (error) {
-        console.error("Error loading statistics", error);
+        console.error("Error loading admin data", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchStats();
+    fetchData();
   }, []);
 
   const toggleUserBlock = async (userId) => {
@@ -90,45 +90,57 @@ export default function AdminDashboard() {
           <CardTitle>Users management</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Full Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {users.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell className="font-medium">{user.name}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>
-                    <span className="px-2 py-1 text-xs text-blue-700 bg-blue-100 rounded-full">
-                      {user.role === 'OWNER' ? 'Owner' : 'Gardener'}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    {user.isBlocked ? (
-                      <span className="text-red-500 flex items-center gap-1"><ShieldAlert className="w-4 h-4"/> Blocked</span>
-                    ) : (
-                      <span className="text-green-500 flex items-center gap-1"><CheckCircle className="w-4 h-4"/> Active</span>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <button 
-                      onClick={() => toggleUserBlock(user.id)}
-                      className={`px-3 py-1 text-sm text-white rounded transition-colors ${user.isBlocked ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`}
-                    >
-                      {user.isBlocked ? 'Block' : 'Unblock'}
-                    </button>
-                  </TableCell>
+          {users.length === 0 ? (
+            <div className="py-8 text-center text-gray-500">No users found.</div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Full Name</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Role</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {users.map((user) => (
+                  <TableRow key={user.id}>
+                    <TableCell className="font-medium">{user.firstName} {user.lastName}</TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>
+                      <span className={`px-2 py-1 text-xs rounded-full ${
+                        user.role === 'ADMIN' 
+                          ? 'text-purple-700 bg-purple-100' 
+                          : user.role === 'OWNER' 
+                            ? 'text-green-700 bg-green-100' 
+                            : 'text-blue-700 bg-blue-100'
+                      }`}>
+                        {user.role === 'ADMIN' ? 'Admin' : user.role === 'OWNER' ? 'Owner' : 'Gardener'}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      {user.isBlocked ? (
+                        <span className="text-red-500 flex items-center gap-1"><ShieldAlert className="w-4 h-4"/> Blocked</span>
+                      ) : (
+                        <span className="text-green-500 flex items-center gap-1"><CheckCircle className="w-4 h-4"/> Active</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {user.role !== 'ADMIN' && (
+                        <button 
+                          onClick={() => toggleUserBlock(user.id)}
+                          className={`px-3 py-1 text-sm text-white rounded transition-colors ${user.isBlocked ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`}
+                        >
+                          {user.isBlocked ? 'Unblock' : 'Block'}
+                        </button>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
     </div>
