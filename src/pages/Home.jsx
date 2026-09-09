@@ -166,52 +166,54 @@ export default function Home() {
         ) : (
           <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
             {gardens.map((garden) => (
-              <Card key={garden.id} className="overflow-hidden transition-all duration-300 border border-gray-100 shadow-md hover:shadow-xl rounded-3xl group bg-white">
-                <div className="relative w-full h-56 overflow-hidden bg-gray-200">
-                  <img 
-                    src={garden.photoUrls?.length > 0 ? garden.photoUrls[0] : 'https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&q=80&w=800'} 
-                    alt="Jardin" 
-                    className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute px-3 py-1.5 text-xs font-bold text-white bg-green-800 rounded-lg top-4 left-4 shadow-sm">
-                    {garden.status === 'AVAILABLE' ? 'Ready to Plant' : 'Occupied'}
-                  </div>
-                  <button className="absolute flex items-center justify-center w-10 h-10 text-gray-500 transition-colors bg-white rounded-full top-4 right-4 shadow-md hover:text-red-500">
-                    <Heart size={18} />
-                  </button>
-                </div>
-                
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between mb-2 gap-4">
-                    <h3 className="text-xl font-bold leading-tight text-gray-900 truncate">
-                      Garden in {garden.city}
-                    </h3>
-                    <div className="text-right shrink-0">
-                      <span className="text-lg font-bold text-green-700">$45</span>
-                      <span className="text-xs text-gray-500 font-medium">/mo</span>
+              <Link key={garden.id} to={`/garden/${garden.id}`}>
+                <Card className="overflow-hidden transition-all duration-300 border border-gray-100 shadow-md hover:shadow-xl rounded-3xl group bg-white">
+                  <div className="relative w-full h-56 overflow-hidden bg-gray-200">
+                    <img 
+                      src={garden.photoUrls?.length > 0 ? garden.photoUrls[0] : 'https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&q=80&w=800'} 
+                      alt="Jardin" 
+                      className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute px-3 py-1.5 text-xs font-bold text-white bg-green-800 rounded-lg top-4 left-4 shadow-sm">
+                      {garden.status === 'AVAILABLE' ? 'Ready to Plant' : 'Occupied'}
                     </div>
+                    <button className="absolute flex items-center justify-center w-10 h-10 text-gray-500 transition-colors bg-white rounded-full top-4 right-4 shadow-md hover:text-red-500">
+                      <Heart size={18} />
+                    </button>
                   </div>
                   
-                  <div className="flex items-center mb-6 text-sm text-gray-500 font-medium">
-                    <MapPin size={16} className="mr-1.5 text-gray-400" />
-                    {garden.city}, {garden.postalCode || 'N/A'}
-                  </div>
-                  
-                  <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-100">
-                    {garden.hasWaterAccess && (
-                      <span className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-red-700 bg-red-50 rounded-md">
-                        <Droplets size={14} /> Water Acc.
+                  <CardContent className="p-6">
+                    <div className="flex items-start justify-between mb-2 gap-4">
+                      <h3 className="text-xl font-bold leading-tight text-gray-900 truncate">
+                        Garden in {garden.city}
+                      </h3>
+                      <div className="text-right shrink-0">
+                        <span className="text-lg font-bold text-green-700">$45</span>
+                        <span className="text-xs text-gray-500 font-medium">/mo</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center mb-6 text-sm text-gray-500 font-medium">
+                      <MapPin size={16} className="mr-1.5 text-gray-400" />
+                      {garden.city}, {garden.postalCode || 'N/A'}
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-100">
+                      {garden.hasWaterAccess && (
+                        <span className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-red-700 bg-red-50 rounded-md">
+                          <Droplets size={14} /> Water Acc.
+                        </span>
+                      )}
+                      <span className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-amber-700 bg-amber-50 rounded-md">
+                        <Sprout size={14} /> Full Sun
                       </span>
-                    )}
-                    <span className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-amber-700 bg-amber-50 rounded-md">
-                      <Sprout size={14} /> Full Sun
-                    </span>
-                    <span className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-gray-600 bg-gray-100 rounded-md">
-                      <Maximize2 size={14} /> {garden.area} sq ft
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
+                      <span className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-gray-600 bg-gray-100 rounded-md">
+                        <Maximize2 size={14} /> {garden.area} sq ft
+                      </span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
         )}

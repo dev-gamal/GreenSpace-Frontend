@@ -26,7 +26,9 @@ export default function Navbar() {
         {/* Liens Desktop */}
         <nav className="hidden gap-8 text-sm font-medium text-gray-500 md:flex">
           {navLinks.map((link) => {
-            const isActive = location.pathname === link.path;
+            const isActive = 
+              location.pathname === link.path || 
+              (link.path === '/explore' && location.pathname.startsWith('/garden/'));
             return (
               <Link
                 key={link.path}

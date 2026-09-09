@@ -12,7 +12,9 @@ export default function BottomNav() {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-3 bg-white border-t md:hidden pb-safe">
       {navItems.map((item) => {
-        const isActive = location.pathname === item.path;
+        const isActive = 
+          location.pathname === item.path || 
+          (item.path === '/explore' && location.pathname.startsWith('/garden/'));
         return (
           <Link key={item.name} to={item.path} className={`flex flex-col items-center gap-1 ${isActive ? 'text-green-700' : 'text-gray-500 hover:text-green-600'}`}>
             {item.icon}
