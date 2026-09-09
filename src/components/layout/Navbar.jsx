@@ -1,9 +1,16 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Search, Bell, Leaf } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 export default function Navbar() {
   const { user } = useAuth();
+  const location = useLocation();
+
+  const navLinks = [
+    { name: 'Home', path: '/' },
+    { name: 'Explore', path: '/explore' },
+    { name: 'Dashboard', path: '/dashboard' },
+  ];
 
   return (
     <header className="sticky top-0 z-40 w-full bg-white border-b">
@@ -18,9 +25,18 @@ export default function Navbar() {
 
         {/* Liens Desktop */}
         <nav className="hidden gap-8 text-sm font-medium text-gray-500 md:flex">
-          <Link to="/" className="text-green-700 font-semibold">Home</Link>
-          <Link to="/explore" className="hover:text-green-700">Explore</Link>
-          <Link to="/dashboard" className="hover:text-green-700">Dashboard</Link>
+          {navLinks.map((link) => {
+            const isActive = location.pathname === link.path;
+            return (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={isActive ? 'text-green-700 font-semibold' : 'hover:text-green-700'}
+              >
+                {link.name}
+              </Link>
+            );
+          })}
         </nav>
 
         {/* Actions & Profil */}

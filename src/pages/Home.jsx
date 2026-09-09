@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
-  Search, Bell, MapPin, Droplets, Maximize2, 
-  Heart, Users, Home as HomeIcon, Compass, 
-  User, Leaf, LogOut, PlusCircle, Sprout 
+  MapPin, Droplets, Maximize2, 
+  Heart, Users, 
+  Leaf, PlusCircle, Sprout 
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -11,7 +11,7 @@ import { useAuth } from '../context/AuthContext';
 import api from '../api/axiosConfig';
 
 export default function Home() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [gardens, setGardens] = useState([]);
 
@@ -50,44 +50,7 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-black/20 to-black/60" />
         </div>
 
-        <header className="absolute top-0 left-0 right-0 z-50 w-full">
-          <div className="container flex items-center justify-between h-20 px-4 mx-auto md:px-8">
-            <div className="flex items-center gap-2">
-              <div className="flex items-center justify-center w-8 h-8 text-green-700 bg-white rounded-md shadow-sm">
-                <Leaf size={20} />
-              </div>
-              <span className="text-xl font-bold text-gray-900">GreenSpace</span>
-            </div>
 
-            <nav className="items-center hidden gap-8 text-sm font-medium text-gray-800 md:flex">
-              <Link to="/" className="font-bold text-green-800">Home</Link>
-              <Link to="/explore" className="hover:text-green-800">Explore</Link>
-              <Link to="/dashboard" className="hover:text-green-800">Dashboard</Link>
-            </nav>
-
-            <div className="flex items-center gap-4">
-              <button className="hidden text-gray-800 md:flex hover:text-black">
-                <Search size={20} />
-              </button>
-              <button className="hidden text-gray-800 md:flex hover:text-black">
-                <Bell size={20} />
-              </button>
-              
-              <div className="hidden w-px h-6 mx-2 bg-gray-400/50 md:block"></div>
-              
-              <Link to="/dashboard" className="flex items-center gap-2 p-1 pr-2 transition-colors rounded-full hover:bg-white/20">
-                <span className="hidden text-sm font-semibold text-gray-900 md:block">{user.firstName} {user.lastName}</span>
-                <div className="flex items-center justify-center w-8 h-8 text-white bg-green-700 border-2 border-white rounded-full shadow-md">
-                  {user.firstName?.charAt(0).toUpperCase()}
-                </div>
-              </Link>
-
-              <Button variant="ghost" size="icon" onClick={logout} className="text-gray-800 hover:text-red-700 hover:bg-white/20">
-                <LogOut size={18} />
-              </Button>
-            </div>
-          </div>
-        </header>
 
         <div className="relative z-10 flex flex-col justify-center h-full max-w-4xl px-4 mx-auto container md:px-8 pt-10">
           <span className="inline-block px-4 py-1.5 mb-6 text-xs font-bold tracking-widest text-green-300 uppercase rounded-full bg-green-950/60 backdrop-blur-md w-max">
@@ -253,39 +216,6 @@ export default function Home() {
           </div>
         )}
       </main>
-
-      <footer className="hidden py-10 border-t bg-gray-50 md:block mt-12">
-        <div className="flex flex-col items-center justify-between px-4 mx-auto text-sm text-gray-500 container md:px-8 md:flex-row">
-          <div className="flex flex-col mb-4 md:mb-0 gap-1">
-            <div className="flex items-center gap-2 text-gray-400">
-              <Leaf size={16} />
-              <span className="font-semibold text-gray-700">GreenSpace</span>
-            </div>
-            <span className="text-xs">Nurturing communities, one garden at a time.</span>
-          </div>
-          <div className="flex gap-8 font-semibold text-gray-600 mb-4 md:mb-0">
-            <Link to="#" className="hover:text-green-700">Terms</Link>
-            <Link to="#" className="hover:text-green-700">Privacy</Link>
-            <Link to="#" className="hover:text-green-700">Help Center</Link>
-          </div>
-          <div className="text-xs font-medium">© 2026 GreenSpace. Organic Stewardship.</div>
-        </div>
-      </footer>
-
-      <nav className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-3 bg-white border-t md:hidden pb-safe">
-        <Link to="/" className="flex flex-col items-center text-green-700">
-          <HomeIcon size={24} />
-          <span className="text-[10px] mt-1 font-medium">Home</span>
-        </Link>
-        <Link to="/explore" className="flex flex-col items-center text-gray-400 hover:text-green-700">
-          <Compass size={24} />
-          <span className="text-[10px] mt-1 font-medium">Explore</span>
-        </Link>
-        <Link to="/dashboard" className="flex flex-col items-center text-gray-400 hover:text-green-700">
-          <User size={24} />
-          <span className="text-[10px] mt-1 font-medium">Dashboard</span>
-        </Link>
-      </nav>
     </div>
   );
 }
