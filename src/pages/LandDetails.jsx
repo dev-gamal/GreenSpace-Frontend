@@ -36,7 +36,7 @@ export default function LandDetails() {
         const response = await api.get(`/garden/${id || 1}`); 
         setGarden(response.data);
       } catch (error) {
-        console.error("Erreur lors de la récupération des détails:", error);
+        console.error("Error fetching garden details:", error);
         setGarden({});
       } finally {
         setLoading(false);
@@ -47,7 +47,7 @@ export default function LandDetails() {
   }, [id]);
 
   if (loading) {
-    return <div className="flex items-center justify-center min-h-screen text-green-700 animate-pulse">Chargement des détails...</div>;
+    return <div className="flex items-center justify-center min-h-screen text-green-700 animate-pulse">Loading details...</div>;
   }
 
   const displayTitle = garden?.title || mockDetails.title;

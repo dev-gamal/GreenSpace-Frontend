@@ -19,8 +19,7 @@ export default function Dashboard() {
   const [data, setData] = useState({ gardens: [], reservations: [] });
   const [loading, setLoading] = useState(true);
 
-  // Vérifie si l'utilisateur est un propriétaire
-  const isOwner = user?.role === "ROLE_PROPRIETAIRE";
+  const isOwner = user?.role === "OWNER";
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -41,7 +40,7 @@ export default function Dashboard() {
           });
         }
       } catch (error) {
-        console.error("Erreur lors de la récupération des données", error);
+        console.error("Error while loading dashboard data", error);
       } finally {
         setLoading(false);
       }
@@ -50,13 +49,12 @@ export default function Dashboard() {
     if (user) fetchDashboardData();
   }, [user, isOwner]);
 
-  // Calcul dynamique des statistiques
   const activeListings = isOwner ? data.gardens.length : 0;
   const pendingRequests = data.reservations.filter((r) => r.status === "PENDING").length;
 
   const stats = [
     {
-      title: isOwner ? "Espaces Actifs" : "Espaces Disponibles",
+      title: isOwner ? "Active Listings" : "Available Gardens",
       value: isOwner ? activeListings : data.gardens.length,
       icon: <Sprout size={20} className="text-green-700" />,
       bg: "bg-gradient-to-br from-green-50 to-green-100/50",
@@ -76,15 +74,12 @@ export default function Dashboard() {
     },
   ];
 
-  // Si aucun utilisateur n'est connecté, on ne rend rien (le routeur gère la redirection)
   if (!user) return null;
 
   return (
     <div className="p-4 md:p-8 space-y-8">
-      {/* HEADER DYNAMIQUE */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          {/* Initiale dynamique au lieu de l'image de Sarah */}
           <div className="w-16 h-16 rounded-full border-2 border-white shadow-sm bg-green-700 text-white flex items-center justify-center text-2xl font-bold">
             {user.firstName?.charAt(0).toUpperCase()}
           </div>
@@ -94,10 +89,10 @@ export default function Dashboard() {
             </h1>
             <p className="text-sm md:text-base text-gray-500">
               <span className="md:hidden">
-                Prêt à cultiver aujourd'hui ?
+                Ready to cultivate your garden?
               </span>
               <span className="hidden md:inline">
-                Voici ce qui se passe dans votre espace aujourd'hui.
+                Here's what's happening today.
               </span>
             </p>
           </div>
@@ -106,11 +101,10 @@ export default function Dashboard() {
           variant="outline"
           className="hidden md:flex bg-gray-100/50 border-gray-200 text-gray-700 rounded-full h-9"
         >
-          <span className="text-xs mr-1">✏️</span> Éditer Profil
+          <span className="text-xs mr-1">✏️</span> Edit Profile
         </Button>
       </div>
 
-      {/* STATS CARDS */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {stats.map((stat, idx) => (
           <div
@@ -133,26 +127,24 @@ export default function Dashboard() {
         ))}
       </div>
 
-      {/* CONTENT GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
-        {/* RECENT ACTIVITY (Connecté au backend) */}
+
         <div className="lg:col-span-8">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-900">Activité Récente</h2>
+            <h2 className="text-xl font-bold text-gray-900">Recent Activity</h2>
             <button className="text-sm font-semibold text-green-700 flex items-center gap-1 hover:underline">
-              Tout voir <ArrowUpRight size={16} />
+              View All <ArrowUpRight size={16} />
             </button>
           </div>
 
           <div className="space-y-4">
             {loading ? (
               <div className="bg-white p-4 rounded-3xl border border-gray-100 shadow-sm text-gray-500 animate-pulse">
-                Chargement des activités...
+                Activity loading...
               </div>
             ) : data.reservations.length === 0 ? (
               <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm text-center text-gray-500">
-                Aucune activité récente.
+                No recent activity found.
               </div>
             ) : (
               data.reservations.slice(0, 4).map((res) => (
@@ -163,19 +155,18 @@ export default function Dashboard() {
                     </div>
                     <div>
                       <h4 className="font-bold text-gray-900 text-sm md:text-base">
-                        Réservation #{res.id}
+                        Reservation #{res.id}
                       </h4>
                       <p className="text-xs md:text-sm text-gray-500">
-                        Jardin ID: {res.gardenId}{" "}
-                        <span className="hidden md:inline">• Récemment</span>
+                        Garden ID: {res.gardenId}{" "}
+                        <span className="hidden md:inline">• Recently</span>
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className={`px-3 py-1 text-xs font-semibold rounded-full flex items-center gap-1 ${res.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}`}>
-                      {res.status === 'PENDING' ? 'En attente' : 'Validé'}
+                      {res.status === 'PENDING' ? 'Pending' : 'Approved'}
                     </span>
-                    {/* Boutons d'action visibles uniquement pour le propriétaire si la demande est en attente */}
                     {isOwner && res.status === 'PENDING' && (
                       <div className="hidden md:flex gap-1">
                         <button className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:text-red-600">
@@ -193,11 +184,10 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* QUICK ACTIONS / LINKS */}
         <div className="lg:col-span-4">
           <h2 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4 mt-4 lg:mt-0 md:text-xl md:text-gray-900 md:normal-case md:tracking-normal">
-            <span className="md:hidden">Liens Rapides</span>
-            <span className="hidden md:inline">Actions Rapides</span>
+            <span className="md:hidden">Fast Links</span>
+            <span className="hidden md:inline">Quick actions</span>
           </h2>
 
           <div className="flex justify-around md:hidden mb-8">
@@ -208,7 +198,7 @@ export default function Dashboard() {
                 </div>
               </div>
               <span className="text-xs font-medium text-gray-700">
-                Terrains
+                Gardens
               </span>
             </div>
             <div className="flex flex-col items-center gap-2">
@@ -218,7 +208,7 @@ export default function Dashboard() {
                 </div>
               </div>
               <span className="text-xs font-medium text-gray-700">
-                Demandes
+                Requests
               </span>
             </div>
             <div className="flex flex-col items-center gap-2">
@@ -228,7 +218,7 @@ export default function Dashboard() {
                 </div>
               </div>
               <span className="text-xs font-medium text-gray-700">
-                Paramètres
+                Settings
               </span>
             </div>
           </div>
@@ -246,10 +236,10 @@ export default function Dashboard() {
                   <span className="text-lg leading-none">+</span>
                 </div>
                 <h3 className="text-white font-bold text-lg leading-tight">
-                  Ajouter un terrain
+                  Add a Garden
                 </h3>
                 <p className="text-white/80 text-xs">
-                  Partagez votre espace.
+                  Share your space.
                 </p>
               </div>
             </div>
@@ -266,10 +256,10 @@ export default function Dashboard() {
                   <ShoppingBag size={14} />
                 </div>
                 <h3 className="text-white font-bold text-lg leading-tight">
-                  Marché Solidaire
+                  Market
                 </h3>
                 <p className="text-white/80 text-xs">
-                  Outils, graines et récoltes.
+                  Tools, seeds and harvest.
                 </p>
               </div>
             </div>
