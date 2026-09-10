@@ -1,9 +1,9 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Search, Bell, Leaf } from 'lucide-react';
+import { Search, Bell, Leaf, LogOut } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 export default function Navbar() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const location = useLocation();
 
   const navLinks = [
@@ -50,15 +50,26 @@ export default function Navbar() {
           
           <div className="hidden w-px h-6 bg-gray-200 md:block"></div>
 
-          <Link to="/dashboard" className="flex items-center gap-3 p-1 pr-3 transition-colors rounded-full hover:bg-gray-50">
-            <span className="text-sm font-medium text-gray-700 md:text-gray-900">
-              <span className="md:hidden">Profil</span>
-              <span className="hidden md:inline">{user?.firstName} {user?.lastName}</span>
-            </span>
-            <div className="flex items-center justify-center w-8 h-8 text-white bg-green-700 border-2 border-green-200 rounded-full shadow-sm">
-              {user?.firstName?.charAt(0).toUpperCase()}
-            </div>
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link to="/dashboard" className="flex items-center gap-3 p-1 pr-3 transition-colors rounded-full hover:bg-gray-50">
+              <span className="text-sm font-medium text-gray-700 md:text-gray-900">
+                <span className="md:hidden">Profil</span>
+                <span className="hidden md:inline">{user?.firstName} {user?.lastName}</span>
+              </span>
+              <div className="flex items-center justify-center w-8 h-8 text-white bg-green-700 border-2 border-green-200 rounded-full shadow-sm">
+                {user?.firstName?.charAt(0).toUpperCase()}
+              </div>
+            </Link>
+            {user && (
+              <button 
+                onClick={logout}
+                className="flex items-center justify-center p-2 text-gray-400 transition-colors rounded-full hover:bg-red-50 hover:text-red-600"
+                title="Logout"
+              >
+                <LogOut size={20} />
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </header>
