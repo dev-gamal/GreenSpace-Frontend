@@ -51,23 +51,32 @@ export default function Navbar() {
           <div className="hidden w-px h-6 bg-gray-200 md:block"></div>
 
           <div className="flex items-center gap-2">
-            <Link to="/dashboard" className="flex items-center gap-3 p-1 pr-3 transition-colors rounded-full hover:bg-gray-50">
-              <span className="text-sm font-medium text-gray-700 md:text-gray-900">
-                <span className="md:hidden">Profil</span>
-                <span className="hidden md:inline">{user?.firstName} {user?.lastName}</span>
-              </span>
-              <div className="flex items-center justify-center w-8 h-8 text-white bg-green-700 border-2 border-green-200 rounded-full shadow-sm">
-                {user?.firstName?.charAt(0).toUpperCase()}
-              </div>
-            </Link>
-            {user && (
-              <button 
-                onClick={logout}
-                className="flex items-center justify-center p-2 text-gray-400 transition-colors rounded-full hover:bg-red-50 hover:text-red-600"
-                title="Logout"
+            {user ? (
+              <>
+                <Link to="/dashboard" className="flex items-center gap-3 p-1 pr-3 transition-colors rounded-full hover:bg-gray-50">
+                  <span className="text-sm font-medium text-gray-700 md:text-gray-900">
+                    <span className="md:hidden">Profil</span>
+                    <span className="hidden md:inline">{user.firstName} {user.lastName}</span>
+                  </span>
+                  <div className="flex items-center justify-center w-8 h-8 text-white bg-green-700 border-2 border-green-200 rounded-full shadow-sm">
+                    {user.firstName?.charAt(0).toUpperCase()}
+                  </div>
+                </Link>
+                <button 
+                  onClick={logout}
+                  className="flex items-center justify-center p-2 text-gray-400 transition-colors rounded-full hover:bg-red-50 hover:text-red-600"
+                  title="Logout"
+                >
+                  <LogOut size={20} />
+                </button>
+              </>
+            ) : (
+              <Link 
+                to="/login" 
+                className="px-4 py-2 text-sm font-medium text-white transition-colors bg-green-700 rounded-lg hover:bg-green-800"
               >
-                <LogOut size={20} />
-              </button>
+                Login
+              </Link>
             )}
           </div>
         </div>

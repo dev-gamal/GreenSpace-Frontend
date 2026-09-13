@@ -5,11 +5,11 @@ export default function AdminRoute({ children }) {
   const { user } = useAuth();
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/401" replace />;
   }
 
   if (user.role !== 'ADMIN') {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/403" replace />;
   }
 
   return children;

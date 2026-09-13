@@ -10,6 +10,9 @@ import Market from "./pages/Market";
 import Layout from "./components/layout/Layout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Error401 from "./pages/errors/Error401";
+import Error403 from "./pages/errors/Error403";
+import Error404 from "./pages/errors/Error404";
 
 function App() {
   const { user } = useAuth();
@@ -28,11 +31,9 @@ function App() {
       <Route
         path="/"
         element={
-          <ProtectedRoute>
-            <Layout>
-              <Home />
-            </Layout>
-          </ProtectedRoute>
+          <Layout>
+            <Home />
+          </Layout>
         }
       />
 
@@ -86,7 +87,30 @@ function App() {
         }
       />
 
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route
+        path="/401"
+        element={
+          <Layout>
+            <Error401 />
+          </Layout>
+        }
+      />
+      <Route
+        path="/403"
+        element={
+          <Layout>
+            <Error403 />
+          </Layout>
+        }
+      />
+      <Route
+        path="*"
+        element={
+          <Layout>
+            <Error404 />
+          </Layout>
+        }
+      />
     </Routes>
   );
 }

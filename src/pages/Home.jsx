@@ -34,10 +34,8 @@ export default function Home() {
       }
     };
 
-    if (user) fetchGardens();
+    fetchGardens();
   }, [user, isOwner]);
-
-  if (!user) return null;
 
   return (
     <div className="min-h-screen pb-20 bg-gray-50 md:pb-0">
