@@ -1,21 +1,26 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { 
-  MapPin, Droplets, Maximize2, 
-  Heart, Users, 
-  Leaf, PlusCircle, Sprout 
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { useAuth } from '../context/AuthContext';
-import api from '../api/axiosConfig';
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import {
+  MapPin,
+  Droplets,
+  Maximize2,
+  Heart,
+  Users,
+  Leaf,
+  PlusCircle,
+  Sprout,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { useAuth } from "../context/AuthContext";
+import api from "../api/axiosConfig";
 
 export default function Home() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [gardens, setGardens] = useState([]);
 
-  const isOwner = user?.role === 'OWNER';
+  const isOwner = user?.role === "OWNER";
 
   useEffect(() => {
     const fetchGardens = async () => {
@@ -39,46 +44,59 @@ export default function Home() {
 
   return (
     <div className="min-h-screen pb-20 bg-gray-50 md:pb-0">
-
       <div className="relative w-full h-[600px] md:h-[650px] mb-24 md:mb-32">
-        <div 
+        <div
           className="absolute inset-0 bg-center bg-cover"
-          style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1466692476877-66184767f00a?auto=format&fit=crop&q=80&w=2000")' }}
+          style={{
+            backgroundImage:
+              'url("https://images.unsplash.com/photo-1466692476877-66184767f00a?auto=format&fit=crop&q=80&w=2000")',
+          }}
         >
           <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-black/20 to-black/60" />
         </div>
-
-
 
         <div className="relative z-10 flex flex-col justify-center h-full max-w-4xl px-4 mx-auto container md:px-8 pt-10">
           <span className="inline-block px-4 py-1.5 mb-6 text-xs font-bold tracking-widest text-green-300 uppercase rounded-full bg-green-950/60 backdrop-blur-md w-max">
             Community Ecosystem
           </span>
           <h1 className="mb-6 text-5xl font-extrabold leading-tight text-white md:text-7xl">
-            Share the Earth, <br/>
+            Share the Earth, <br />
             <span className="text-green-400">Grow Together.</span>
           </h1>
           <p className="max-w-2xl mb-10 text-lg text-gray-100 md:text-xl font-medium drop-shadow-md">
-            Join the modern community connecting conscious landowners with passionate urban gardeners. Cultivate organic food, forge local friendships, and nurture a sustainable future in your neighborhood.
+            Join the modern community connecting conscious landowners with
+            passionate urban gardeners. Cultivate organic food, forge local
+            friendships, and nurture a sustainable future in your neighborhood.
           </p>
           <div className="flex flex-col gap-4 sm:flex-row">
             {isOwner ? (
-              <Button asChild size="lg" className="h-14 gap-2 px-8 text-base font-bold text-white bg-green-700 rounded-full hover:bg-green-800 shadow-lg">
+              <Button
+                asChild
+                size="lg"
+                className="h-14 gap-2 px-8 text-base font-bold text-white bg-green-700 rounded-full hover:bg-green-800 shadow-lg"
+              >
                 <Link to="/ajouter-jardin">
                   <PlusCircle size={20} /> Offer My Land
                 </Link>
               </Button>
             ) : (
-              <Button asChild size="lg" className="h-14 gap-2 px-8 text-base font-bold text-white bg-green-700 rounded-full hover:bg-green-800 shadow-lg">
+              <Button
+                asChild
+                size="lg"
+                className="h-14 gap-2 px-8 text-base font-bold text-white bg-green-700 rounded-full hover:bg-green-800 shadow-lg"
+              >
                 <Link to="/explore">
                   <Sprout size={20} /> Find a Garden
                 </Link>
               </Button>
             )}
-            <Button asChild variant="outline" size="lg" className="h-14 gap-2 px-8 text-base font-bold text-white border-white/50 bg-white/10 rounded-full hover:bg-white/20 backdrop-blur-md hover:text-white shadow-lg">
-              <Link to="/explore">
-                Explore Gardens
-              </Link>
+            <Button
+              asChild
+              variant="outline"
+              size="lg"
+              className="h-14 gap-2 px-8 text-base font-bold text-white border-white/50 bg-white/10 rounded-full hover:bg-white/20 backdrop-blur-md hover:text-white shadow-lg"
+            >
+              <Link to="/explore">Explore Gardens</Link>
             </Button>
           </div>
         </div>
@@ -86,14 +104,17 @@ export default function Home() {
         <div className="absolute left-0 right-0 hidden -bottom-16 md:block container mx-auto px-8 z-20">
           <Card className="p-8 shadow-2xl rounded-3xl border-none bg-white">
             <div className="flex flex-col items-center justify-between gap-8 md:flex-row md:gap-4">
-              
               <div className="flex items-center gap-5 flex-1 justify-center md:justify-start">
                 <div className="flex items-center justify-center w-14 h-14 text-white bg-green-700 rounded-full shadow-sm">
                   <Leaf size={24} />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold text-gray-900">24,500 lbs</h3>
-                  <p className="text-sm text-gray-500">Organic produce harvested this season</p>
+                  <h3 className="text-2xl font-bold text-gray-900">
+                    24,500 lbs
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    Organic produce harvested this season
+                  </p>
                 </div>
               </div>
 
@@ -105,7 +126,9 @@ export default function Home() {
                 </div>
                 <div>
                   <h3 className="text-2xl font-bold text-gray-900">1,840</h3>
-                  <p className="text-sm text-gray-500">Active landowner partnerships</p>
+                  <p className="text-sm text-gray-500">
+                    Active landowner partnerships
+                  </p>
                 </div>
               </div>
 
@@ -116,11 +139,14 @@ export default function Home() {
                   <MapPin size={24} />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold text-gray-900">350 Acres</h3>
-                  <p className="text-sm text-gray-500">Urban land revitalized and protected</p>
+                  <h3 className="text-2xl font-bold text-gray-900">
+                    350 Acres
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    Urban land revitalized and protected
+                  </p>
                 </div>
               </div>
-
             </div>
           </Card>
         </div>
@@ -139,18 +165,26 @@ export default function Home() {
               {isOwner ? "Mes espaces partagés" : "Available Land Plots"}
             </h2>
             <p className="text-gray-500 text-lg">
-              {isOwner ? "Gérez les espaces que vous avez mis à disposition." : "Discover unused urban spaces ready for transformation. Connect with owners offering fertile ground for your next project."}
+              {isOwner
+                ? "Gérez les espaces que vous avez mis à disposition."
+                : "Discover unused urban spaces ready for transformation. Connect with owners offering fertile ground for your next project."}
             </p>
           </div>
-          <Button variant="link" className="flex items-center gap-2 font-bold text-green-700 text-base p-0 hover:no-underline hover:text-green-800">
+          <Button
+            variant="link"
+            className="flex items-center gap-2 font-bold text-green-700 text-base p-0 hover:no-underline hover:text-green-800"
+          >
             Explore Map View <span>→</span>
           </Button>
         </div>
 
         {loading ? (
           <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-            {[1, 2, 3].map(n => (
-              <Card key={n} className="h-80 bg-gray-100 animate-pulse border-none rounded-3xl" />
+            {[1, 2, 3].map((n) => (
+              <Card
+                key={n}
+                className="h-80 bg-gray-100 animate-pulse border-none rounded-3xl"
+              />
             ))}
           </div>
         ) : gardens.length === 0 ? (
@@ -158,8 +192,12 @@ export default function Home() {
             <div className="w-16 h-16 mb-4 flex items-center justify-center rounded-full bg-white shadow-sm text-gray-400">
               <Sprout size={32} />
             </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">No space found at the moment.</h3>
-            <p className="text-gray-500">Check back later for new opportunities in your area.</p>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">
+              No space found at the moment.
+            </h3>
+            <p className="text-gray-500">
+              Check back later for new opportunities in your area.
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
@@ -167,35 +205,45 @@ export default function Home() {
               <Link key={garden.id} to={`/garden/${garden.id}`}>
                 <Card className="overflow-hidden transition-all duration-300 border border-gray-100 shadow-md hover:shadow-xl rounded-3xl group bg-white">
                   <div className="relative w-full h-56 overflow-hidden bg-gray-200">
-                    <img 
-                      src={garden.photoUrls?.length > 0 ? garden.photoUrls[0] : 'https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&q=80&w=800'} 
-                      alt="Jardin" 
+                    <img
+                      src={
+                        garden.photoUrls?.length > 0
+                          ? garden.photoUrls[0]
+                          : "https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&q=80&w=800"
+                      }
+                      alt="Jardin"
                       className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
                     />
                     <div className="absolute px-3 py-1.5 text-xs font-bold text-white bg-green-800 rounded-lg top-4 left-4 shadow-sm">
-                      {garden.status === 'AVAILABLE' ? 'Ready to Plant' : 'Occupied'}
+                      {garden.status === "AVAILABLE"
+                        ? "Ready to Plant"
+                        : "Occupied"}
                     </div>
                     <button className="absolute flex items-center justify-center w-10 h-10 text-gray-500 transition-colors bg-white rounded-full top-4 right-4 shadow-md hover:text-red-500">
                       <Heart size={18} />
                     </button>
                   </div>
-                  
+
                   <CardContent className="p-6">
                     <div className="flex items-start justify-between mb-2 gap-4">
                       <h3 className="text-xl font-bold leading-tight text-gray-900 truncate">
                         Garden in {garden.city}
                       </h3>
                       <div className="text-right shrink-0">
-                        <span className="text-lg font-bold text-green-700">$45</span>
-                        <span className="text-xs text-gray-500 font-medium">/mo</span>
+                        <span className="text-lg font-bold text-green-700">
+                          $45
+                        </span>
+                        <span className="text-xs text-gray-500 font-medium">
+                          /mo
+                        </span>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center mb-6 text-sm text-gray-500 font-medium">
                       <MapPin size={16} className="mr-1.5 text-gray-400" />
-                      {garden.city}, {garden.postalCode || 'N/A'}
+                      {garden.city}, {garden.postalCode || "N/A"}
                     </div>
-                    
+
                     <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-100">
                       {garden.hasWaterAccess && (
                         <span className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-red-700 bg-red-50 rounded-md">

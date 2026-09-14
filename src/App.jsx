@@ -7,6 +7,7 @@ import Dashboard from "./pages/Dashboard";
 import LandDetails from "./pages/LandDetails";
 import Explore from "./pages/Explore";
 import Market from "./pages/Market";
+import Messages from "./pages/Messages";
 import Layout from "./components/layout/Layout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -82,6 +83,17 @@ function App() {
           <ProtectedRoute>
             <Layout>
               <Market />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/messages"
+        element={
+          <ProtectedRoute>
+            <Layout fullWidth noFooter>
+              <Messages />
             </Layout>
           </ProtectedRoute>
         }
