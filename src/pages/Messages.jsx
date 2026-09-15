@@ -14,7 +14,6 @@ import {
   MessageCircle,
 } from 'lucide-react';
 
-// ─── Helpers ─────────────────────────────────────────────────
 
 function formatTime(dateStr) {
   if (!dateStr) return '';
@@ -43,7 +42,6 @@ function getInitials(firstName, lastName) {
   return `${(firstName || '')[0] || ''}${(lastName || '')[0] || ''}`.toUpperCase();
 }
 
-// ─── Sub-components ──────────────────────────────────────────
 
 function ConversationItem({ conversation, isActive, onClick }) {
   const initials = getInitials(conversation.firstName, conversation.lastName);
@@ -57,14 +55,12 @@ function ConversationItem({ conversation, isActive, onClick }) {
           : 'hover:bg-gray-50 border-l-4 border-transparent'
       }`}
     >
-      {/* Avatar */}
       <div className="relative shrink-0">
         <div className="flex items-center justify-center w-11 h-11 text-sm font-bold text-green-800 bg-green-100 rounded-full">
           {initials}
         </div>
       </div>
 
-      {/* Content */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between mb-0.5">
           <span
@@ -85,7 +81,6 @@ function ConversationItem({ conversation, isActive, onClick }) {
         </p>
       </div>
 
-      {/* Unread badge */}
       {conversation.unreadCount > 0 && (
         <span className="flex items-center justify-center w-5 h-5 mt-1 text-[10px] font-bold text-white bg-red-500 rounded-full shrink-0">
           {conversation.unreadCount}
@@ -101,7 +96,6 @@ function MessageBubble({ message, currentUserId }) {
   return (
     <div className={`flex ${isMe ? 'justify-end' : 'justify-start'} mb-3`}>
       <div className="max-w-[75%]">
-        {/* Text bubble */}
         <div
           className={`px-4 py-2.5 text-sm leading-relaxed ${
             isMe
@@ -112,7 +106,6 @@ function MessageBubble({ message, currentUserId }) {
           {message.content}
         </div>
 
-        {/* Timestamp */}
         {message.showTime && (
           <p
             className={`mt-1 text-[10px] text-gray-400 ${
@@ -127,7 +120,6 @@ function MessageBubble({ message, currentUserId }) {
   );
 }
 
-// ─── Main Component ──────────────────────────────────────────
 
 export default function Messages() {
   const { user } = useAuth();
@@ -145,7 +137,6 @@ export default function Messages() {
 
   const filters = ['All', 'Unread'];
 
-  // ─── Load conversations ────────────────────────────────
   const loadConversations = useCallback(async () => {
     if (!user?.id) return;
     try {
@@ -156,13 +147,25 @@ export default function Messages() {
     } finally {
       setLoading(false);
     }
-  }, [user?.id]);
+  }, [user]);
 
   useEffect(() => {
-    loadConversations();
-  }, [loadConversations]);
+    let ignore = false;
+    const fetchConversations = async () => {
+      if (!user?.id) return;
+      try {
+        const res = await api.get(`/chat/conversations?userId=${user.id}`);
+        if (!ignore) setConversations(res.data);
+      } catch (err) {
+        console.error('Failed to load conversations:', err);
+      } finally {
+        if (!ignore) setLoading(false);
+      }
+    };
+    fetchConversations();
+    return () => { ignore = true; };
+  }, [user]);
 
-  // ─── WebSocket connection ──────────────────────────────
   useEffect(() => {
     if (!user?.id) return;
 
@@ -179,11 +182,9 @@ export default function Messages() {
         client.subscribe(`/user/${user.id}/queue/messages`, (frame) => {
           const incoming = JSON.parse(frame.body);
 
-          // If we're viewing this conversation, add the message
           setActiveConversation((currentActive) => {
             if (currentActive === incoming.senderId) {
               setMessages((prev) => [...prev, incoming]);
-              // Mark as read
               api.put(
                 `/chat/mark-read?senderId=${incoming.senderId}&recipientId=${user.id}`
               ).catch(() => {});
@@ -191,7 +192,6 @@ export default function Messages() {
             return currentActive;
           });
 
-          // Refresh conversations list
           loadConversations();
         });
       },
@@ -208,9 +208,8 @@ export default function Messages() {
         client.deactivate();
       }
     };
-  }, [user?.id, loadConversations]);
+  }, [user, loadConversations]);
 
-  // ─── Load messages for selected conversation ───────────
   useEffect(() => {
     if (!activeConversation || !user?.id) return;
 
@@ -222,14 +221,12 @@ export default function Messages() {
         );
         setMessages(res.data);
 
-        // Mark messages as read
         await api
           .put(
             `/chat/mark-read?senderId=${activeConversation}&recipientId=${user.id}`
           )
           .catch(() => {});
 
-        // Refresh conversations to update unread counts
         loadConversations();
       } catch (err) {
         console.error('Failed to load messages:', err);
@@ -239,25 +236,21 @@ export default function Messages() {
     };
 
     loadMessages();
-  }, [activeConversation, user?.id, loadConversations]);
+  }, [activeConversation, user, loadConversations]);
 
-  // ─── Scroll to bottom ─────────────────────────────────
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // ─── Selected conversation info ────────────────────────
   const selectedConv = conversations.find(
     (c) => c.userId === activeConversation
   );
 
-  // ─── Prepare messages with showTime flag ───────────────
   const preparedMessages = messages.map((msg, idx) => ({
     ...msg,
     showTime: idx === messages.length - 1,
   }));
 
-  // ─── Filter conversations ─────────────────────────────
   const filteredConversations = conversations.filter((conv) => {
     const name = `${conv.firstName} ${conv.lastName}`.toLowerCase();
     const matchesSearch = name.includes(searchQuery.toLowerCase());
@@ -265,7 +258,6 @@ export default function Messages() {
     return matchesSearch;
   });
 
-  // ─── Handlers ─────────────────────────────────────────
   const handleSelectConversation = (userId) => {
     setActiveConversation(userId);
     setShowMobileChat(true);
@@ -286,7 +278,6 @@ export default function Messages() {
         body: JSON.stringify(request),
       });
 
-      // Optimistically add the message
       const optimisticMsg = {
         id: Date.now(),
         senderId: user.id,
@@ -298,7 +289,6 @@ export default function Messages() {
       setMessages((prev) => [...prev, optimisticMsg]);
       setMessageInput('');
 
-      // Refresh conversations list after a short delay
       setTimeout(loadConversations, 500);
     }
   };
@@ -312,13 +302,11 @@ export default function Messages() {
 
   return (
     <div className="flex h-[calc(100vh-64px)] bg-gray-50">
-      {/* ─── Left: Conversations Sidebar ─────────────────── */}
       <aside
         className={`${
           showMobileChat ? 'hidden md:flex' : 'flex'
         } flex-col w-full md:w-80 lg:w-96 bg-white border-r shrink-0`}
       >
-        {/* Header */}
         <div className="flex items-center justify-between px-5 pt-5 pb-3">
           <h1 className="text-xl font-bold text-gray-900">Messages</h1>
           <button className="p-2 text-gray-500 transition-colors rounded-lg hover:bg-gray-100 hover:text-green-700">
@@ -326,7 +314,6 @@ export default function Messages() {
           </button>
         </div>
 
-        {/* Search */}
         <div className="px-5 mb-3">
           <div className="relative">
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -342,7 +329,6 @@ export default function Messages() {
           </div>
         </div>
 
-        {/* Filter tabs */}
         <div className="flex gap-2 px-5 mb-3">
           {filters.map((filter) => (
             <button
@@ -359,7 +345,6 @@ export default function Messages() {
           ))}
         </div>
 
-        {/* Conversation list */}
         <div className="flex-1 overflow-y-auto px-2">
           {loading ? (
             <div className="flex items-center justify-center py-12 text-gray-400">
@@ -385,7 +370,6 @@ export default function Messages() {
         </div>
       </aside>
 
-      {/* ─── Right: Chat Area ────────────────────────────── */}
       <section
         className={`${
           showMobileChat ? 'flex' : 'hidden md:flex'
@@ -393,10 +377,8 @@ export default function Messages() {
       >
         {selectedConv ? (
           <>
-            {/* Chat header */}
             <div className="flex items-center justify-between px-5 py-3 border-b bg-white">
               <div className="flex items-center gap-3">
-                {/* Mobile back button */}
                 <button
                   onClick={() => setShowMobileChat(false)}
                   className="p-1 mr-1 text-gray-500 md:hidden hover:text-gray-700"
@@ -404,7 +386,6 @@ export default function Messages() {
                   <ArrowLeft size={20} />
                 </button>
 
-                {/* Avatar */}
                 <div className="flex items-center justify-center w-10 h-10 text-sm font-bold text-green-800 bg-green-100 rounded-full">
                   {getInitials(selectedConv.firstName, selectedConv.lastName)}
                 </div>
@@ -423,7 +404,6 @@ export default function Messages() {
               </div>
             </div>
 
-            {/* Messages area */}
             <div className="flex-1 overflow-y-auto px-5 py-4">
               {messagesLoading ? (
                 <div className="flex items-center justify-center h-full text-gray-400">
@@ -449,7 +429,6 @@ export default function Messages() {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Message input */}
             <div className="px-4 py-3 border-t bg-white">
               <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 border border-gray-200 rounded-full">
                 <button className="p-1.5 text-gray-400 hover:text-green-700 transition-colors shrink-0">
@@ -479,7 +458,6 @@ export default function Messages() {
             </div>
           </>
         ) : (
-          /* Empty state */
           <div className="flex flex-col items-center justify-center flex-1 text-gray-400">
             <div className="flex items-center justify-center w-16 h-16 mb-4 bg-gray-100 rounded-full">
               <MessageCircle size={28} />
