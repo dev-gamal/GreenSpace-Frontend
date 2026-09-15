@@ -13,22 +13,6 @@ export default function LandDetails() {
   const [garden, setGarden] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const mockDetails = {
-    title: "Sunny South-Facing Urban Plot",
-    description1: "Welcome to our sunny slice of heaven right in the heart of Hawthorne! We have a spacious, south-facing backyard that gets fantastic sunlight year-round. We've previously grown tomatoes, peppers, and an extensive herb garden here, so the soil is rich and ready to go.",
-    description2: "Ideal for a passionate urban gardener looking to cultivate organic produce. We prioritize sustainable practices and kindly ask that no synthetic fertilizers or pesticides are used. The plot is mostly level with established raised beds and a dedicated composting area.",
-    rating: 4.9,
-    reviews: 14,
-    price: 45,
-    host: {
-      name: "Sarah J.",
-      avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=150",
-      verified: true
-    },
-    seasonStart: "Mar 15, 2026",
-    seasonEnd: "Oct 31, 2026",
-    mapImage: "https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=1200" // Placeholder carte
-  };
 
   useEffect(() => {
     const fetchGardenDetails = async () => {
@@ -50,27 +34,26 @@ export default function LandDetails() {
     return <div className="flex items-center justify-center min-h-screen text-green-700 animate-pulse">Loading details...</div>;
   }
 
-  const displayTitle = garden?.title || mockDetails.title;
-  const displayArea = garden?.area || 400;
-  const displayCity = garden?.city || "Portland, OR (Hawthorne District)";
-  const displayPrice = garden?.price || mockDetails.price;
-  const images = garden?.photoUrls?.length > 0 ? garden.photoUrls : [
-    "https://images.unsplash.com/photo-1466692476877-66184767f00a?auto=format&fit=crop&w=1600",
-    "https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=400",
-    "https://images.unsplash.com/photo-1599839619722-39751411ea63?auto=format&fit=crop&w=400",
-    "https://images.unsplash.com/photo-1416879598555-22bcf2ebce10?auto=format&fit=crop&w=400"
-  ];
+  const displayTitle = garden?.title;
+  const displayArea = garden?.areaSize || garden?.area;
+  const displayCity = garden?.city;
+  const displayPrice = garden?.price;
+  const images = garden?.photoUrls || [];
 
   return (
     <div className="container max-w-6xl px-4 py-8 mx-auto md:px-8">
       
       <section className="mb-8">
         <div className="relative w-full overflow-hidden h-64 md:h-[450px] rounded-3xl mb-4">
-          <img 
-            src={images[0]} 
-            alt="Main Garden" 
-            className="object-cover w-full h-full"
-          />
+          {images.length > 0 ? (
+            <img 
+              src={images[0]} 
+              alt="Main Garden" 
+              className="object-cover w-full h-full"
+            />
+          ) : (
+            <div className="flex items-center justify-center w-full h-full bg-gray-200 text-gray-500">No Image Available</div>
+          )}
           <div className="absolute flex gap-2 bottom-4 left-4">
             <span className="px-3 py-1 text-xs font-bold text-white uppercase bg-green-700 rounded-md">
               Available Now
@@ -81,17 +64,21 @@ export default function LandDetails() {
           </div>
         </div>
 
-        <div className="grid grid-cols-4 gap-4">
-          <img src={images[1]} alt="Thumbnail 1" className="object-cover w-full h-24 rounded-2xl md:h-32" />
-          <img src={images[2]} alt="Thumbnail 2" className="object-cover w-full h-24 rounded-2xl md:h-32" />
-          <img src={images[3]} alt="Thumbnail 3" className="object-cover w-full h-24 rounded-2xl md:h-32" />
-          <button className="flex flex-col items-center justify-center w-full h-24 transition-colors bg-gray-100 md:h-32 rounded-2xl hover:bg-gray-200">
-            <div className="grid grid-cols-3 gap-1 mb-2 opacity-50">
-              {[...Array(9)].map((_, i) => <div key={i} className="w-1.5 h-1.5 bg-gray-600 rounded-full" />)}
-            </div>
-            <span className="text-xs font-medium text-gray-600">View all 12 photos</span>
-          </button>
-        </div>
+        {images.length > 1 && (
+          <div className="grid grid-cols-4 gap-4">
+            {images[1] && <img src={images[1]} alt="Thumbnail 1" className="object-cover w-full h-24 rounded-2xl md:h-32" />}
+            {images[2] && <img src={images[2]} alt="Thumbnail 2" className="object-cover w-full h-24 rounded-2xl md:h-32" />}
+            {images[3] && <img src={images[3]} alt="Thumbnail 3" className="object-cover w-full h-24 rounded-2xl md:h-32" />}
+            {images.length > 4 && (
+              <button className="flex flex-col items-center justify-center w-full h-24 transition-colors bg-gray-100 md:h-32 rounded-2xl hover:bg-gray-200">
+                <div className="grid grid-cols-3 gap-1 mb-2 opacity-50">
+                  {[...Array(9)].map((_, i) => <div key={i} className="w-1.5 h-1.5 bg-gray-600 rounded-full" />)}
+                </div>
+                <span className="text-xs font-medium text-gray-600">View all {images.length} photos</span>
+              </button>
+            )}
+          </div>
+        )}
       </section>
 
       <div className="grid grid-cols-1 gap-12 lg:grid-cols-12">
@@ -111,8 +98,7 @@ export default function LandDetails() {
               <span className="w-1.5 h-6 bg-orange-400 rounded-full"></span> About this land
             </h2>
             <div className="space-y-4 text-gray-600 leading-relaxed">
-              <p>{mockDetails.description1}</p>
-              <p>{mockDetails.description2}</p>
+              <p>{garden?.description}</p>
             </div>
           </section>
 
@@ -148,9 +134,9 @@ export default function LandDetails() {
 
           <section className="py-8">
             <h2 className="mb-2 text-lg font-bold text-gray-900">Approximate Location</h2>
-            <p className="mb-6 text-sm text-gray-500">Hawthorne District, Portland. Exact location provided after booking.</p>
+            <p className="mb-6 text-sm text-gray-500">{garden?.address ? `${garden.address}, ${garden.city}` : garden?.city}. Exact location provided after booking.</p>
             <div className="w-full overflow-hidden bg-gray-200 h-60 rounded-3xl">
-              <img src={mockDetails.mapImage} alt="Map" className="object-cover w-full h-full opacity-80 mix-blend-multiply" />
+              <div className="flex items-center justify-center w-full h-full text-gray-400">Map not available</div>
             </div>
           </section>
 
@@ -165,34 +151,19 @@ export default function LandDetails() {
                   <span className="text-3xl font-extrabold text-gray-900">${displayPrice}</span>
                   <span className="text-sm font-medium text-gray-500"> /season</span>
                 </div>
-                <div className="flex items-center gap-1 pb-1 text-sm font-medium text-gray-600">
-                  <Star size={14} className="text-amber-500 fill-amber-500" />
-                  <span className="font-bold text-gray-900">{mockDetails.rating}</span>
-                  <span className="underline decoration-gray-300 underline-offset-2">({mockDetails.reviews} reviews)</span>
-                </div>
               </div>
 
               <div className="flex items-center gap-4 p-4 mb-6 bg-gray-50/80 rounded-2xl">
-                <img src={mockDetails.host.avatar} alt="Host" className="object-cover w-12 h-12 rounded-full shadow-sm" />
+                <div className="flex items-center justify-center w-12 h-12 bg-gray-200 rounded-full shadow-sm">
+                  <span className="text-gray-500 font-bold">{garden?.owner?.firstName?.[0] || garden?.owner?.username?.[0] || "H"}</span>
+                </div>
                 <div>
                   <p className="text-[10px] font-bold tracking-wider text-gray-500 uppercase">Meet your host</p>
-                  <p className="font-bold text-gray-900">{mockDetails.host.name}</p>
-                  <div className="flex items-center gap-1 mt-0.5 text-xs text-green-700 font-medium">
-                    <ShieldCheck size={14} /> Identity verified
-                  </div>
+                  <p className="font-bold text-gray-900">{garden?.owner?.firstName || garden?.owner?.username || "Host"}</p>
                 </div>
               </div>
 
-              <div className="space-y-3 mb-8 text-sm">
-                <div className="flex justify-between border-b border-gray-100 pb-3">
-                  <span className="text-gray-500">Season Starts</span>
-                  <span className="font-bold text-gray-900">{mockDetails.seasonStart}</span>
-                </div>
-                <div className="flex justify-between pb-1">
-                  <span className="text-gray-500">Season Ends</span>
-                  <span className="font-bold text-gray-900">{mockDetails.seasonEnd}</span>
-                </div>
-              </div>
+              {/* Real season dates would go here if available */}
 
               <div className="space-y-3">
                 <Button className="w-full h-12 gap-2 text-base font-bold text-white bg-green-700 rounded-full hover:bg-green-800">
