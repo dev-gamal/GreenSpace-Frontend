@@ -14,6 +14,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Error401 from "./pages/errors/Error401";
 import Error403 from "./pages/errors/Error403";
 import Error404 from "./pages/errors/Error404";
+import AddGarden from "./pages/AddGarden";
 
 function App() {
   const { user } = useAuth();
@@ -62,6 +63,17 @@ function App() {
                 <Dashboard />
               </Layout>
             )}
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/garden/add"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <AddGarden />
+            </Layout>
           </ProtectedRoute>
         }
       />
