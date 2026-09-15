@@ -37,7 +37,7 @@ export default function LandDetails() {
   const displayTitle = garden?.title;
   const displayArea = garden?.areaSize || garden?.area;
   const displayCity = garden?.city;
-  const displayPrice = garden?.price;
+
   const images = garden?.photoUrls || [];
 
   return (
@@ -56,10 +56,7 @@ export default function LandDetails() {
           )}
           <div className="absolute flex gap-2 bottom-4 left-4">
             <span className="px-3 py-1 text-xs font-bold text-white uppercase bg-green-700 rounded-md">
-              Available Now
-            </span>
-            <span className="px-3 py-1 text-xs font-semibold text-gray-800 bg-white/90 backdrop-blur-sm rounded-md">
-              Organic Only
+              {garden?.status || 'AVAILABLE'}
             </span>
           </div>
         </div>
@@ -102,35 +99,17 @@ export default function LandDetails() {
             </div>
           </section>
 
-          <section className="p-8 bg-gray-50/80 rounded-3xl">
-            <h2 className="mb-6 text-lg font-bold text-gray-900">Available Amenities</h2>
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <div className="flex items-start gap-4">
-                <div className="flex items-center justify-center shrink-0 w-10 h-10 text-red-600 bg-red-100 rounded-full"><Droplets size={20} /></div>
-                <div><h4 className="font-bold text-sm text-gray-900">Irrigation</h4><p className="text-xs text-gray-500">Hose & drip line</p></div>
+          {garden?.hasTools && (
+            <section className="p-8 bg-gray-50/80 rounded-3xl">
+              <h2 className="mb-6 text-lg font-bold text-gray-900">Available Amenities</h2>
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <div className="flex items-start gap-4">
+                  <div className="flex items-center justify-center shrink-0 w-10 h-10 text-green-600 bg-green-100 rounded-full"><Hammer size={20} /></div>
+                  <div><h4 className="font-bold text-sm text-gray-900">Tool Shed</h4><p className="text-xs text-gray-500">Basic hand tools available</p></div>
+                </div>
               </div>
-              <div className="flex items-start gap-4">
-                <div className="flex items-center justify-center shrink-0 w-10 h-10 text-amber-600 bg-amber-100 rounded-full"><Sun size={20} /></div>
-                <div><h4 className="font-bold text-sm text-gray-900">Sunlight</h4><p className="text-xs text-gray-500">Full Sun (8+ hrs)</p></div>
-              </div>
-              <div className="flex items-start gap-4">
-                <div className="flex items-center justify-center shrink-0 w-10 h-10 text-green-600 bg-green-100 rounded-full"><Hammer size={20} /></div>
-                <div><h4 className="font-bold text-sm text-gray-900">Tool Shed</h4><p className="text-xs text-gray-500">Basic hand tools</p></div>
-              </div>
-              <div className="flex items-start gap-4">
-                <div className="flex items-center justify-center shrink-0 w-10 h-10 text-red-500 bg-red-50 rounded-full"><Recycle size={20} /></div>
-                <div><h4 className="font-bold text-sm text-gray-900">Composting</h4><p className="text-xs text-gray-500">3-bin system</p></div>
-              </div>
-              <div className="flex items-start gap-4">
-                <div className="flex items-center justify-center shrink-0 w-10 h-10 text-gray-600 bg-gray-200 rounded-full"><Car size={20} /></div>
-                <div><h4 className="font-bold text-sm text-gray-900">Access</h4><p className="text-xs text-gray-500">Street parking</p></div>
-              </div>
-              <div className="flex items-start gap-4">
-                <div className="flex items-center justify-center shrink-0 w-10 h-10 text-green-600 bg-green-100 rounded-full"><Dog size={20} /></div>
-                <div><h4 className="font-bold text-sm text-gray-900">Pet Friendly</h4><p className="text-xs text-gray-500">Dogs allowed</p></div>
-              </div>
-            </div>
-          </section>
+            </section>
+          )}
 
           <section className="py-8">
             <h2 className="mb-2 text-lg font-bold text-gray-900">Approximate Location</h2>
@@ -146,20 +125,15 @@ export default function LandDetails() {
           <div className="sticky top-24">
             <Card className="p-6 border-gray-100 shadow-xl rounded-3xl">
               
-              <div className="flex items-end justify-between mb-8">
-                <div>
-                  <span className="text-3xl font-extrabold text-gray-900">${displayPrice}</span>
-                  <span className="text-sm font-medium text-gray-500"> /season</span>
-                </div>
-              </div>
+
 
               <div className="flex items-center gap-4 p-4 mb-6 bg-gray-50/80 rounded-2xl">
                 <div className="flex items-center justify-center w-12 h-12 bg-gray-200 rounded-full shadow-sm">
-                  <span className="text-gray-500 font-bold">{garden?.owner?.firstName?.[0] || garden?.owner?.username?.[0] || "H"}</span>
+                  <span className="text-gray-500 font-bold">{garden?.ownerName?.[0] || "H"}</span>
                 </div>
                 <div>
                   <p className="text-[10px] font-bold tracking-wider text-gray-500 uppercase">Meet your host</p>
-                  <p className="font-bold text-gray-900">{garden?.owner?.firstName || garden?.owner?.username || "Host"}</p>
+                  <p className="font-bold text-gray-900">{garden?.ownerName || "Host"}</p>
                 </div>
               </div>
 
