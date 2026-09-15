@@ -14,11 +14,9 @@ export default function Error401() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Sign In state
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
 
-  // Create Account state
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [regEmail, setRegEmail] = useState('');
@@ -28,7 +26,7 @@ export default function Error401() {
   const [city, setCity] = useState('');
   const [postalCode, setPostalCode] = useState('');
 
-  const redirectTo = location.state?.from || location.pathname;
+  const redirectTo = location.state?.from || '/';
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -75,7 +73,6 @@ export default function Error401() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[85vh] px-4 py-12 text-center relative overflow-hidden">
-      {/* Background glow effect */}
       <div className="absolute top-0 left-0 w-96 h-96 bg-green-50 rounded-full blur-[100px] -z-10 opacity-70"></div>
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-orange-50 rounded-full blur-[100px] -z-10 opacity-70"></div>
 
@@ -103,7 +100,6 @@ export default function Error401() {
 
       <Card className="w-full max-w-md p-2 mb-8 bg-white border-gray-100 shadow-2xl rounded-3xl">
         <CardContent className="p-6">
-          {/* Tabs */}
           <div className="flex p-1 mb-6 bg-gray-50 rounded-xl">
             <button
               type="button"
@@ -129,14 +125,12 @@ export default function Error401() {
             </button>
           </div>
 
-          {/* Error message */}
           {error && (
             <div className="p-3 mb-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded-xl">
               {error}
             </div>
           )}
 
-          {/* ─── Sign In Form ─── */}
           {activeTab === 'signin' && (
             <form onSubmit={handleLogin}>
               <div className="space-y-4 mb-6 text-left">
@@ -183,11 +177,9 @@ export default function Error401() {
             </form>
           )}
 
-          {/* ─── Create Account Form ─── */}
           {activeTab === 'register' && (
             <form onSubmit={handleRegister}>
               <div className="space-y-4 mb-6 text-left">
-                {/* Name row */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className={labelClass}>First Name</label>
@@ -219,7 +211,6 @@ export default function Error401() {
                   </div>
                 </div>
 
-                {/* Email */}
                 <div>
                   <label className={labelClass}>Community Email</label>
                   <div className="relative">
@@ -235,7 +226,6 @@ export default function Error401() {
                   </div>
                 </div>
 
-                {/* Password */}
                 <div>
                   <label className={labelClass}>Create Passcode</label>
                   <div className="relative">
@@ -252,7 +242,6 @@ export default function Error401() {
                   </div>
                 </div>
 
-                {/* Role */}
                 <div>
                   <label className={labelClass}>I am a…</label>
                   <select
@@ -265,7 +254,6 @@ export default function Error401() {
                   </select>
                 </div>
 
-                {/* Owner-specific fields */}
                 {role === 'OWNER' && (
                   <div className="p-4 space-y-3 border border-green-200 rounded-xl bg-green-50/50">
                     <p className="text-xs font-semibold text-green-800">Owner information</p>
@@ -348,7 +336,6 @@ export default function Error401() {
   );
 }
 
-// Helper icons
 function MailIcon(props) {
   return (
     <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
