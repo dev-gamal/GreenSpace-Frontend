@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams} from 'react-router-dom';
 import { 
-  MapPin, Maximize2, Star, ShieldCheck, ArrowRight, 
-  Droplets, Sun, Hammer, Recycle, Car, Dog, Lock, HelpCircle 
+  MapPin, Maximize2, ArrowRight, Hammer, Lock, HelpCircle 
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
