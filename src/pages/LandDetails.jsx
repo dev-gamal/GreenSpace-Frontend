@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams} from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { 
   MapPin, Maximize2, ArrowRight, Hammer, Lock, HelpCircle 
 } from 'lucide-react';
@@ -9,6 +9,7 @@ import api from '../api/axiosConfig';
 
 export default function LandDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [garden, setGarden] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -136,10 +137,16 @@ export default function LandDetails() {
                 </div>
               </div>
 
-              {/* Real season dates would go here if available */}
 
               <div className="space-y-3">
-                <Button className="w-full h-12 gap-2 text-base font-bold text-white bg-green-700 rounded-full hover:bg-green-800">
+                <Button
+                  onClick={() => {
+                    if (garden?.ownerId) {
+                      navigate(`/messages?userId=${garden.ownerId}&userName=${encodeURIComponent(garden.ownerName || 'Host')}`);
+                    }
+                  }}
+                  className="w-full h-12 gap-2 text-base font-bold text-white bg-green-700 rounded-full hover:bg-green-800"
+                >
                   Send Message <ArrowRight size={18} />
                 </Button>
                 <Button variant="outline" className="w-full h-12 text-sm font-bold text-gray-700 border-gray-200 rounded-full hover:bg-gray-50">
