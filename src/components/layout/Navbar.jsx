@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Search, Bell, Leaf, LogOut } from 'lucide-react';
+import { Search, Bell, LogOut } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import logo from '../../assets/logo.jpg';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -17,11 +18,8 @@ export default function Navbar() {
     <header className="sticky top-0 z-40 w-full bg-white border-b">
       <div className="flex items-center justify-between px-4 py-3 mx-auto md:px-8">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2">
-          <div className="flex items-center justify-center w-8 h-8 text-green-700 bg-green-50 rounded-lg">
-            <Leaf size={20} />
-          </div>
-          <span className="text-xl font-bold text-green-800">GreenSpace</span>
+        <Link to="/" className="flex items-center">
+          <img src={logo} alt="GreenSpace Logo" className="h-12 w-auto object-contain mix-blend-multiply" />
         </Link>
 
         {/* Liens Desktop */}

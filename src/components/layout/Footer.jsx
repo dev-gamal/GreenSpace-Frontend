@@ -1,13 +1,12 @@
-import { Leaf } from 'lucide-react';
+import logo from '../../assets/logo.jpg';
 
 export default function Footer() {
   return (
     <footer className="hidden py-8 bg-white border-t md:block">
       <div className="flex items-center justify-between px-8 mx-auto text-sm text-gray-500">
         <div className="flex flex-col">
-          <div className="flex items-center gap-1 mb-1 text-green-700">
-            <Leaf size={16} />
-            <span className="font-semibold text-gray-900">GreenSpace</span>
+          <div className="flex items-center mb-1">
+            <img src={logo} alt="GreenSpace Logo" className="h-8 w-auto object-contain mix-blend-multiply" />
           </div>
           <span className="text-xs">Nurturing communities, one garden at a time.</span>
         </div>

@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "../context/AuthContext";
 import api from "../api/axiosConfig";
+import heroBg from "../assets/hero-bg.jpg";
 
 export default function Home() {
   const { user } = useAuth();
@@ -48,8 +49,7 @@ export default function Home() {
         <div
           className="absolute inset-0 bg-center bg-cover"
           style={{
-            backgroundImage:
-              'url("https://images.unsplash.com/photo-1466692476877-66184767f00a?auto=format&fit=crop&q=80&w=2000")',
+            backgroundImage: `url(${heroBg})`,
           }}
         >
           <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-black/20 to-black/60" />

@@ -4,6 +4,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import logo from '../assets/logo.jpg';
 
 const schema = yup.object({
   firstName: yup.string().required('The first name is required'),
@@ -59,7 +60,9 @@ export default function Register() {
     <div className="flex items-center justify-center min-h-screen py-10 bg-gray-50">
       <div className="w-full max-w-lg p-8 space-y-6 bg-white rounded-lg shadow-lg">
         <div className="text-center">
-          <h2 className="text-3xl font-extrabold text-green-700">GreenSpace</h2>
+          <Link to="/">
+            <img src={logo} alt="GreenSpace Logo" className="h-20 w-auto mx-auto object-contain mix-blend-multiply mb-2" />
+          </Link>
           <p className="mt-2 text-sm text-gray-600">Create your account to get started</p>
         </div>
         
