@@ -360,7 +360,7 @@ export default function Messages() {
       },
       reconnectDelay: 5000,
       onConnect: () => {
-        client.subscribe(`/user/${user.id}/queue/messages`, (frame) => {
+        client.subscribe(`/user/queue/messages`, (frame) => {
           const incoming = JSON.parse(frame.body);
 
           setActiveConversation((currentActive) => {
