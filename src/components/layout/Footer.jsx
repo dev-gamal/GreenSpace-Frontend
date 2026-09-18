@@ -15,7 +15,7 @@ export default function Footer() {
           <a href="#" className="hover:text-gray-900">Privacy</a>
           <a href="#" className="hover:text-gray-900">Help Center</a>
         </div>
-        <div className="text-xs">© 2024 GreenSpace. Organic Stewardship.</div>
+        <div className="text-xs">© 2026 GreenSpace. Organic Stewardship.</div>
       </div>
     </footer>
   );

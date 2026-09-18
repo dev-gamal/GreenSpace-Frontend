@@ -15,6 +15,7 @@ import Error401 from "./pages/errors/Error401";
 import Error403 from "./pages/errors/Error403";
 import Error404 from "./pages/errors/Error404";
 import AddGarden from "./pages/AddGarden";
+import EditGarden from "./pages/EditGarden";
 
 function App() {
   const { user } = useAuth();
@@ -73,6 +74,17 @@ function App() {
           <ProtectedRoute>
             <Layout>
               <AddGarden />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/garden/edit/:id"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <EditGarden />
             </Layout>
           </ProtectedRoute>
         }

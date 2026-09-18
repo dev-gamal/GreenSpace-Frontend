@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { 
-  MapPin, Maximize2, ArrowRight, Hammer, Lock, HelpCircle 
+  MapPin, Maximize2, ArrowRight, Hammer, Lock, HelpCircle, Pencil, Trash2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -10,8 +11,25 @@ import api from '../api/axiosConfig';
 export default function LandDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [garden, setGarden] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState(false);
+
+  const canManage = user && (user.role === 'ADMIN' || user.id === garden?.ownerId);
+
+  const handleDelete = async () => {
+    if (!window.confirm('Are you sure you want to delete this garden? This action cannot be undone.')) return;
+    setDeleting(true);
+    try {
+      await api.delete(`/garden/${id}`);
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Error deleting garden:', error);
+      alert(error.response?.data?.message || 'Failed to delete garden.');
+      setDeleting(false);
+    }
+  };
 
 
   useEffect(() => {
@@ -136,7 +154,25 @@ export default function LandDetails() {
                   <p className="font-bold text-gray-900">{garden?.ownerName || "Host"}</p>
                 </div>
               </div>
-
+              
+              {canManage && (
+                <div className="flex gap-2 mb-4">
+                  <Button
+                    onClick={() => navigate(`/garden/edit/${id}`)}
+                    className="flex-1 h-10 gap-2 text-sm font-semibold text-white bg-green-700 rounded-full hover:bg-green-800"
+                  >
+                    <Pencil size={14} /> Edit
+                  </Button>
+                  <Button
+                    onClick={handleDelete}
+                    disabled={deleting}
+                    variant="outline"
+                    className="flex-1 h-10 gap-2 text-sm font-semibold text-red-600 border-red-200 rounded-full hover:bg-red-50"
+                  >
+                    <Trash2 size={14} /> {deleting ? 'Deleting...' : 'Delete'}
+                  </Button>
+                </div>
+              )}
 
               <div className="space-y-3">
                 <Button

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowUpRight,
   CheckCircle2,
@@ -9,6 +10,11 @@ import {
   Settings,
   CalendarCheck,
   ShoppingBag,
+  Pencil,
+  Trash2,
+  MapPin,
+  Maximize2,
+  Plus
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "../context/AuthContext";
@@ -16,10 +22,25 @@ import api from "../api/axiosConfig";
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [data, setData] = useState({ gardens: [], reservations: [] });
   const [loading, setLoading] = useState(true);
 
   const isOwner = user?.role === "OWNER";
+
+  const handleDeleteGarden = async (gardenId) => {
+    if (!window.confirm('Are you sure you want to delete this garden?')) return;
+    try {
+      await api.delete(`/garden/${gardenId}`);
+      setData(prev => ({
+        ...prev,
+        gardens: prev.gardens.filter(g => g.id !== gardenId)
+      }));
+    } catch (error) {
+      console.error('Error deleting garden:', error);
+      alert(error.response?.data?.message || 'Failed to delete garden.');
+    }
+  };
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -127,6 +148,73 @@ export default function Dashboard() {
         ))}
       </div>
 
+      {isOwner && (
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold text-gray-900">My Gardens</h2>
+            <Link to="/garden/add" className="text-sm font-semibold text-green-700 flex items-center gap-1 hover:underline">
+              <Plus size={16} /> Add Garden
+            </Link>
+          </div>
+          {loading ? (
+            <div className="bg-white p-4 rounded-3xl border border-gray-100 shadow-sm text-gray-500 animate-pulse">
+              Loading gardens...
+            </div>
+          ) : data.gardens.length === 0 ? (
+            <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm text-center">
+              <p className="text-gray-500 mb-4">You haven't added any gardens yet.</p>
+              <Link to="/garden/add">
+                <Button className="bg-green-700 hover:bg-green-800 rounded-full">Add Your First Garden</Button>
+              </Link>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {data.gardens.map((garden) => (
+                <div key={garden.id} className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden group">
+                  <Link to={`/garden/${garden.id}`}>
+                    <div className="relative h-36 overflow-hidden bg-gray-200">
+                      <img
+                        src={garden.photoUrls?.length > 0 ? garden.photoUrls[0] : 'https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&q=80&w=800'}
+                        alt={garden.title}
+                        className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
+                      />
+                      <div className={`absolute top-3 left-3 px-2.5 py-1 text-[10px] font-bold uppercase rounded-lg text-white ${
+                        garden.status === 'AVAILABLE' ? 'bg-green-700' : garden.status === 'RESERVED' ? 'bg-orange-500' : 'bg-gray-500'
+                      }`}>
+                        {garden.status}
+                      </div>
+                    </div>
+                  </Link>
+                  <div className="p-4">
+                    <Link to={`/garden/${garden.id}`}>
+                      <h3 className="font-bold text-gray-900 text-sm truncate mb-1">{garden.title}</h3>
+                    </Link>
+                    <div className="flex items-center gap-3 text-xs text-gray-500 mb-3">
+                      <span className="flex items-center gap-1"><MapPin size={12} /> {garden.city}</span>
+                      <span className="flex items-center gap-1"><Maximize2 size={12} /> {garden.areaSize} m²</span>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => navigate(`/garden/edit/${garden.id}`)}
+                        className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold text-green-700 bg-green-50 rounded-full hover:bg-green-100 transition-colors"
+                      >
+                        <Pencil size={12} /> Edit
+                      </button>
+                      <button
+                        onClick={() => handleDeleteGarden(garden.id)}
+                        className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold text-red-600 bg-red-50 rounded-full hover:bg-red-100 transition-colors"
+                      >
+                        <Trash2 size={12} /> Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
         <div className="lg:col-span-8">
@@ -224,25 +312,27 @@ export default function Dashboard() {
           </div>
 
           <div className="hidden md:flex flex-col gap-4">
-            <div className="relative h-32 rounded-3xl overflow-hidden group cursor-pointer">
-              <img
-                src="https://images.unsplash.com/photo-1592424001844-0b1a0e1cb1dc?auto=format&fit=crop&w=600"
-                alt="New Listing"
-                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-black/40"></div>
-              <div className="absolute inset-0 p-5 flex flex-col justify-end">
-                <div className="w-8 h-8 rounded-full border border-white/40 flex items-center justify-center text-white mb-2 backdrop-blur-sm">
-                  <span className="text-lg leading-none">+</span>
+            <Link to="/garden/add">
+              <div className="relative h-32 rounded-3xl overflow-hidden group cursor-pointer">
+                <img
+                  src="https://images.unsplash.com/photo-1592424001844-0b1a0e1cb1dc?auto=format&fit=crop&w=600"
+                  alt="New Listing"
+                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-black/40"></div>
+                <div className="absolute inset-0 p-5 flex flex-col justify-end">
+                  <div className="w-8 h-8 rounded-full border border-white/40 flex items-center justify-center text-white mb-2 backdrop-blur-sm">
+                    <span className="text-lg leading-none">+</span>
+                  </div>
+                  <h3 className="text-white font-bold text-lg leading-tight">
+                    Add a Garden
+                  </h3>
+                  <p className="text-white/80 text-xs">
+                    Share your space.
+                  </p>
                 </div>
-                <h3 className="text-white font-bold text-lg leading-tight">
-                  Add a Garden
-                </h3>
-                <p className="text-white/80 text-xs">
-                  Share your space.
-                </p>
               </div>
-            </div>
+            </Link>
 
             <div className="relative h-32 rounded-3xl overflow-hidden group cursor-pointer">
               <img
