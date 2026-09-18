@@ -244,18 +244,44 @@ export default function Messages() {
   const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const [conversations, setConversations] = useState([]);
-  const [activeConversation, setActiveConversation] = useState(null);
+  const [activeConversation, setActiveConversationState] = useState(() => {
+    const chatWith = searchParams.get("chatWith");
+    return chatWith ? Number(chatWith) : null;
+  });
   const [messages, setMessages] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState("All");
   const [messageInput, setMessageInput] = useState("");
-  const [showMobileChat, setShowMobileChat] = useState(false);
+  const [showMobileChat, setShowMobileChat] = useState(() => {
+    return !!searchParams.get("chatWith");
+  });
   const [loading, setLoading] = useState(true);
   const [messagesLoading, setMessagesLoading] = useState(false);
   const [showNewConversation, setShowNewConversation] = useState(false);
   const messagesEndRef = useRef(null);
   const stompClientRef = useRef(null);
   const urlParamsHandled = useRef(false);
+
+  const setActiveConversation = useCallback(
+    (valueOrFn) => {
+      setActiveConversationState((prev) => {
+        const newValue = typeof valueOrFn === "function" ? valueOrFn(prev) : valueOrFn;
+        if (newValue) {
+          setSearchParams((params) => {
+            params.set("chatWith", String(newValue));
+            return params;
+          }, { replace: true });
+        } else {
+          setSearchParams((params) => {
+            params.delete("chatWith");
+            return params;
+          }, { replace: true });
+        }
+        return newValue;
+      });
+    },
+    [setSearchParams],
+  );
 
   const filters = ["All", "Unread"];
 
@@ -312,9 +338,13 @@ export default function Messages() {
         setShowMobileChat(true);
       }
 
-      setSearchParams({}, { replace: true });
+      setSearchParams((params) => {
+        params.delete("userId");
+        params.delete("userName");
+        return params;
+      }, { replace: true });
     }
-  }, [searchParams, user, conversations, setSearchParams]);
+  }, [searchParams, user, conversations, setSearchParams, setActiveConversation]);
 
   useEffect(() => {
     let ignore = false;
@@ -353,6 +383,9 @@ export default function Messages() {
     const token = localStorage.getItem("token");
     if (!token) return;
 
+    let cancelled = false;
+    let subscription = null;
+
     const client = new Client({
       webSocketFactory: () => new SockJS("/ws"),
       connectHeaders: {
@@ -360,20 +393,45 @@ export default function Messages() {
       },
       reconnectDelay: 5000,
       onConnect: () => {
-        client.subscribe(`/user/queue/messages`, (frame) => {
+        if (cancelled) return;
+
+        subscription = client.subscribe(`/user/queue/messages`, (frame) => {
+          if (cancelled) return;
           const incoming = JSON.parse(frame.body);
 
-          setActiveConversation((currentActive) => {
-            if (currentActive === incoming.senderId) {
-              setMessages((prev) => [...prev, incoming]);
-              api
-                .put(
-                  `/chat/mark-read?senderId=${incoming.senderId}&recipientId=${user.id}`,
-                )
-                .catch(() => {});
-            }
-            return currentActive;
-          });
+          if (incoming.senderId === user.id) {
+            setMessages((prev) => {
+              const optimisticIdx = prev.findIndex(
+                (m) =>
+                  m.senderId === user.id &&
+                  m.recipientId === incoming.recipientId &&
+                  m.content === incoming.content &&
+                  !m.serverConfirmed,
+              );
+              if (optimisticIdx !== -1) {
+                const updated = [...prev];
+                updated[optimisticIdx] = { ...incoming, serverConfirmed: true };
+                return updated;
+              }
+              if (prev.some((m) => m.id === incoming.id)) return prev;
+              return [...prev, { ...incoming, serverConfirmed: true }];
+            });
+          } else {
+            setActiveConversationState((currentActive) => {
+              if (currentActive === incoming.senderId) {
+                setMessages((prev) => {
+                  if (prev.some((m) => m.id === incoming.id)) return prev;
+                  return [...prev, incoming];
+                });
+                api
+                  .put(
+                    `/chat/mark-read?senderId=${incoming.senderId}&recipientId=${user.id}`,
+                  )
+                  .catch(() => {});
+              }
+              return currentActive;
+            });
+          }
 
           loadConversations();
         });
@@ -387,6 +445,10 @@ export default function Messages() {
     stompClientRef.current = client;
 
     return () => {
+      cancelled = true;
+      if (subscription) {
+        subscription.unsubscribe();
+      }
       if (client.active) {
         client.deactivate();
       }
