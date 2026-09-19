@@ -31,6 +31,17 @@ export default function LandDetails() {
     }
   };
 
+  const handleStatusChange = async (e) => {
+    const newStatus = e.target.value;
+    try {
+      await api.put(`/garden/${id}/status?status=${newStatus}`);
+      setGarden(prev => ({ ...prev, status: newStatus }));
+    } catch (error) {
+      console.error('Error updating garden status:', error);
+      alert(error.response?.data?.message || 'Failed to update status.');
+    }
+  };
+
 
   useEffect(() => {
     const fetchGardenDetails = async () => {
@@ -156,21 +167,35 @@ export default function LandDetails() {
               </div>
               
               {canManage && (
-                <div className="flex gap-2 mb-4">
-                  <Button
-                    onClick={() => navigate(`/garden/edit/${id}`)}
-                    className="flex-1 h-10 gap-2 text-sm font-semibold text-white bg-green-700 rounded-full hover:bg-green-800"
-                  >
-                    <Pencil size={14} /> Edit
-                  </Button>
-                  <Button
-                    onClick={handleDelete}
-                    disabled={deleting}
-                    variant="outline"
-                    className="flex-1 h-10 gap-2 text-sm font-semibold text-red-600 border-red-200 rounded-full hover:bg-red-50"
-                  >
-                    <Trash2 size={14} /> {deleting ? 'Deleting...' : 'Delete'}
-                  </Button>
+                <div className="flex flex-col gap-2 mb-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Status:</span>
+                    <select
+                      value={garden?.status || 'AVAILABLE'}
+                      onChange={handleStatusChange}
+                      className="flex-1 text-sm font-semibold p-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500 text-gray-700 bg-gray-50 hover:bg-gray-100 transition-colors"
+                    >
+                      <option value="AVAILABLE">AVAILABLE</option>
+                      <option value="RESERVED">RESERVED</option>
+                      <option value="ARCHIVED">ARCHIVED</option>
+                    </select>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={() => navigate(`/garden/edit/${id}`)}
+                      className="flex-1 h-10 gap-2 text-sm font-semibold text-white bg-green-700 rounded-full hover:bg-green-800"
+                    >
+                      <Pencil size={14} /> Edit
+                    </Button>
+                    <Button
+                      onClick={handleDelete}
+                      disabled={deleting}
+                      variant="outline"
+                      className="flex-1 h-10 gap-2 text-sm font-semibold text-red-600 border-red-200 rounded-full hover:bg-red-50"
+                    >
+                      <Trash2 size={14} /> {deleting ? 'Deleting...' : 'Delete'}
+                    </Button>
+                  </div>
                 </div>
               )}
 

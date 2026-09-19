@@ -42,6 +42,19 @@ export default function Dashboard() {
     }
   };
 
+  const handleStatusChange = async (gardenId, newStatus) => {
+    try {
+      await api.put(`/garden/${gardenId}/status?status=${newStatus}`);
+      setData(prev => ({
+        ...prev,
+        gardens: prev.gardens.map(g => g.id === gardenId ? { ...g, status: newStatus } : g)
+      }));
+    } catch (error) {
+      console.error('Error updating garden status:', error);
+      alert(error.response?.data?.message || 'Failed to update status.');
+    }
+  };
+
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
@@ -192,6 +205,17 @@ export default function Dashboard() {
                     <div className="flex items-center gap-3 text-xs text-gray-500 mb-3">
                       <span className="flex items-center gap-1"><MapPin size={12} /> {garden.city}</span>
                       <span className="flex items-center gap-1"><Maximize2 size={12} /> {garden.areaSize} m²</span>
+                    </div>
+                    <div className="mb-3">
+                      <select
+                        value={garden.status}
+                        onChange={(e) => handleStatusChange(garden.id, e.target.value)}
+                        className="w-full text-xs font-semibold p-1.5 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-green-500 text-gray-700 bg-gray-50 hover:bg-gray-100 transition-colors"
+                      >
+                        <option value="AVAILABLE">AVAILABLE</option>
+                        <option value="RESERVED">RESERVED</option>
+                        <option value="ARCHIVED">ARCHIVED</option>
+                      </select>
                     </div>
                     <div className="flex gap-2">
                       <button
