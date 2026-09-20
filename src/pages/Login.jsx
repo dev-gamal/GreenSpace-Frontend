@@ -6,7 +6,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import logo from '../assets/logo.jpg';
 
-// Schéma de validation
 const schema = yup.object({
   email: yup.string().email('Invalid email address').required('The email is required'),
   password: yup.string().required('The password is required'),

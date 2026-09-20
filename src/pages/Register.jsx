@@ -127,7 +127,6 @@ export default function Register() {
             <p className="mt-1 text-sm text-red-500">{errors.role?.message}</p>
           </div>
 
-          {/* Extra fields shown for OWNER role */}
           {selectedRole === 'OWNER' && (
             <div className="p-4 space-y-4 border border-green-200 rounded-lg bg-green-50/50">
               <p className="text-sm font-medium text-green-800">Owner information</p>

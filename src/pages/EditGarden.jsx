@@ -24,7 +24,9 @@ export default function EditGarden() {
     postalCode: '',
     rules: '',
     hasTools: false,
-    photoUrls: ''
+    photoUrls: '',
+    latitude: '',
+    longitude: ''
   });
 
   const [ownerId, setOwnerId] = useState(null);
@@ -45,7 +47,9 @@ export default function EditGarden() {
           postalCode: garden.postalCode || '',
           rules: garden.rules || '',
           hasTools: garden.hasTools || false,
-          photoUrls: garden.photoUrls ? garden.photoUrls.join(', ') : ''
+          photoUrls: garden.photoUrls ? garden.photoUrls.join(', ') : '',
+          latitude: garden.latitude || '',
+          longitude: garden.longitude || ''
         });
       } catch (err) {
         console.error("Error fetching garden", err);
@@ -90,14 +94,7 @@ export default function EditGarden() {
         .map((url) => url.trim())
         .filter((url) => url.length > 0);
 
-      const params = new URLSearchParams();
-      if (photos.length > 0) {
-        photos.forEach(photo => params.append('photoUrls', photo));
-      } else {
-        params.append('photoUrls', '');
-      }
-
-      await api.put(`/garden/${id}?${params.toString()}`, {
+      await api.put(`/garden/${id}`, {
         title: formData.title,
         description: formData.description,
         areaSize: parseFloat(formData.areaSize),
@@ -106,8 +103,9 @@ export default function EditGarden() {
         postalCode: formData.postalCode,
         rules: formData.rules,
         hasTools: formData.hasTools,
-        latitude: 0.0,
-        longitude: 0.0
+        latitude: parseFloat(formData.latitude) || null,
+        longitude: parseFloat(formData.longitude) || null,
+        photoUrls: photos
       });
 
       navigate(`/garden/${id}`);
@@ -243,6 +241,38 @@ export default function EditGarden() {
                       value={formData.postalCode}
                       onChange={handleChange}
                       placeholder="e.g. 20000"
+                      className={inputClass}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                <div>
+                  <label className={labelClass}>Latitude</label>
+                  <div className="relative">
+                    <MapPin className="absolute text-gray-400 left-3 top-3.5" size={16} />
+                    <input
+                      type="number"
+                      step="any"
+                      name="latitude"
+                      value={formData.latitude}
+                      onChange={handleChange}
+                      placeholder="e.g. 33.5731"
+                      className={inputClass}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className={labelClass}>Longitude</label>
+                  <div className="relative">
+                    <MapPin className="absolute text-gray-400 left-3 top-3.5" size={16} />
+                    <input
+                      type="number"
+                      step="any"
+                      name="longitude"
+                      value={formData.longitude}
+                      onChange={handleChange}
+                      placeholder="e.g. -7.5898"
                       className={inputClass}
                     />
                   </div>

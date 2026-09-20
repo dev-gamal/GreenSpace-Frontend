@@ -22,7 +22,9 @@ export default function AddGarden() {
     postalCode: '',
     rules: '',
     hasTools: false,
-    photoUrls: ''
+    photoUrls: '',
+    latitude: '',
+    longitude: ''
   });
 
   if (user?.role !== 'OWNER') {
@@ -56,12 +58,6 @@ export default function AddGarden() {
 
       const params = new URLSearchParams();
       params.append('ownerId', user.id);
-      
-      if (photos.length > 0) {
-        photos.forEach(photo => params.append('photoUrls', photo));
-      } else {
-        params.append('photoUrls', '');
-      }
 
       await api.post(`/garden?${params.toString()}`, {
         title: formData.title,
@@ -72,8 +68,9 @@ export default function AddGarden() {
         postalCode: formData.postalCode,
         rules: formData.rules,
         hasTools: formData.hasTools,
-        latitude: 0.0,
-        longitude: 0.0
+        latitude: parseFloat(formData.latitude) || null,
+        longitude: parseFloat(formData.longitude) || null,
+        photoUrls: photos
       });
 
       navigate('/dashboard');
@@ -209,6 +206,38 @@ export default function AddGarden() {
                       value={formData.postalCode}
                       onChange={handleChange}
                       placeholder="e.g. 20000"
+                      className={inputClass}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                <div>
+                  <label className={labelClass}>Latitude</label>
+                  <div className="relative">
+                    <MapPin className="absolute text-gray-400 left-3 top-3.5" size={16} />
+                    <input
+                      type="number"
+                      step="any"
+                      name="latitude"
+                      value={formData.latitude}
+                      onChange={handleChange}
+                      placeholder="e.g. 33.5731"
+                      className={inputClass}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className={labelClass}>Longitude</label>
+                  <div className="relative">
+                    <MapPin className="absolute text-gray-400 left-3 top-3.5" size={16} />
+                    <input
+                      type="number"
+                      step="any"
+                      name="longitude"
+                      value={formData.longitude}
+                      onChange={handleChange}
+                      placeholder="e.g. -7.5898"
                       className={inputClass}
                     />
                   </div>

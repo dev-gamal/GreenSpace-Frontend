@@ -40,7 +40,6 @@ export default function Explore() {
 
   return (
     <div className="p-4 md:p-8 space-y-8">
-      {/* Header */}
       <div className="max-w-2xl">
         <div className="flex items-center gap-2 mb-3">
           <div className="w-6 h-px bg-green-700"></div>

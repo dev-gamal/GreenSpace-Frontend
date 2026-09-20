@@ -11,7 +11,7 @@ const defaultCenter = {
   lng: -7.5898
 };
 
-const MapComponent = ({ address, city }) => {
+const MapComponent = ({ address, city, lat, lng }) => {
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || ''
@@ -21,20 +21,26 @@ const MapComponent = ({ address, city }) => {
   const [markerPosition, setMarkerPosition] = useState(null);
 
   useEffect(() => {
-    if (isLoaded && (address || city)) {
-      const geocoder = new window.google.maps.Geocoder();
-      const searchQuery = `${address ? address + ', ' : ''}${city || ''}`;
-      
-      geocoder.geocode({ address: searchQuery }, (results, status) => {
-        if (status === 'OK' && results[0]) {
-          const location = results[0].geometry.location;
-          const newCenter = { lat: location.lat(), lng: location.lng() };
-          setCenter(newCenter);
-          setMarkerPosition(newCenter);
-        }
-      });
+    if (isLoaded) {
+      if (lat && lng) {
+        const exactLocation = { lat: parseFloat(lat), lng: parseFloat(lng) };
+        setCenter(exactLocation);
+        setMarkerPosition(exactLocation);
+      } else if (address || city) {
+        const geocoder = new window.google.maps.Geocoder();
+        const searchQuery = `${address ? address + ', ' : ''}${city || ''}`;
+        
+        geocoder.geocode({ address: searchQuery }, (results, status) => {
+          if (status === 'OK' && results[0]) {
+            const location = results[0].geometry.location;
+            const newCenter = { lat: location.lat(), lng: location.lng() };
+            setCenter(newCenter);
+            setMarkerPosition(newCenter);
+          }
+        });
+      }
     }
-  }, [isLoaded, address, city]);
+  }, [isLoaded, address, city, lat, lng]);
 
   if (loadError) {
     return <div className="flex items-center justify-center w-full h-full text-gray-500 bg-gray-100">Error loading maps</div>;
