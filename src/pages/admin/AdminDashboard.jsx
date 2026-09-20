@@ -7,17 +7,20 @@ import api from '../../api/axiosConfig';
 export default function AdminDashboard() {
   const [stats, setStats] = useState(null);
   const [users, setUsers] = useState([]);
+  const [gardens, setGardens] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [statsRes, usersRes] = await Promise.all([
+        const [statsRes, usersRes, gardensRes] = await Promise.all([
           api.get('/admin/stats'),
           api.get('/admin/users'),
+          api.get('/admin/gardens?size=100'), // fetching up to 100 gardens for simplicity
         ]);
         setStats(statsRes.data);
         setUsers(usersRes.data);
+        setGardens(gardensRes.data?.content || []);
       } catch (error) {
         console.error("Error loading admin data", error);
       } finally {
@@ -143,6 +146,47 @@ export default function AdminDashboard() {
           )}
         </CardContent>
       </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Gardens management</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {gardens.length === 0 ? (
+            <div className="py-8 text-center text-gray-500">No gardens found.</div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Location</TableHead>
+                  <TableHead>Size (m²)</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {gardens.map((garden) => (
+                  <TableRow key={garden.id}>
+                    <TableCell className="font-medium">{garden.city}, {garden.address}</TableCell>
+                    <TableCell>{garden.areaSize}</TableCell>
+                    <TableCell>
+                      <span className={`px-2 py-1 text-xs rounded-full ${
+                        garden.status === 'AVAILABLE' 
+                          ? 'text-green-700 bg-green-100' 
+                          : garden.status === 'RESERVED' 
+                            ? 'text-blue-700 bg-blue-100' 
+                            : 'text-gray-700 bg-gray-100'
+                      }`}>
+                        {garden.status}
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+
     </div>
   );
 }

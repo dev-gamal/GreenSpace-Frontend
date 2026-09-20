@@ -54,7 +54,7 @@ const mockProducts = [
 const categories = ['All', 'Produce', 'Seeds', 'Tools', 'Compost'];
 
 export default function Market() {
-  const [activeTab, setActiveTab] = useState('All');
+  const [activeCategory, setActiveCategory] = useState('All');
   const [showMap, setShowMap] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 

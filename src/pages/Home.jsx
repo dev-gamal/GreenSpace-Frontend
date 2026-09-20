@@ -75,7 +75,7 @@ export default function Home() {
                 size="lg"
                 className="h-14 gap-2 px-8 text-base font-bold text-white bg-green-700 rounded-full hover:bg-green-800 shadow-lg"
               >
-                <Link to="/ajouter-jardin">
+                <Link to="/garden/add">
                   <PlusCircle size={20} /> Offer My Land
                 </Link>
               </Button>
