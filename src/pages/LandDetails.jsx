@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { 
   MapPin, Maximize2, ArrowRight, Hammer, Lock, HelpCircle, Pencil, Trash2
 } from 'lucide-react';
+import MapComponent from '../components/MapComponent';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import api from '../api/axiosConfig';
@@ -144,7 +145,7 @@ export default function LandDetails() {
             <h2 className="mb-2 text-lg font-bold text-gray-900">Approximate Location</h2>
             <p className="mb-6 text-sm text-gray-500">{garden?.address ? `${garden.address}, ${garden.city}` : garden?.city}. Exact location provided after booking.</p>
             <div className="w-full overflow-hidden bg-gray-200 h-60 rounded-3xl">
-              <div className="flex items-center justify-center w-full h-full text-gray-400">Map not available</div>
+              <MapComponent address={garden?.address} city={garden?.city} />
             </div>
           </section>
 

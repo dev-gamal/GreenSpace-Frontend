@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Search, MapPin, ArrowLeftRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import MapComponent from '../components/MapComponent';
 
 const mockProducts = [
   { 
@@ -17,43 +18,44 @@ const mockProducts = [
   },
   { 
     id: 2, 
-    title: 'Heirloom Tomato Seeds', 
-    price: 'Trade', 
-    type: 'trade', 
+    title: 'Heirloom Tomato Seedlings', 
+    price: 'Swap for compost', 
+    type: 'swap', 
     location: 'Pine Ridge Farm', 
-    distance: '2.1 mi', 
+    distance: '1.2 mi', 
     user: 'Marcus T.', 
-    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=150', 
-    image: 'https://images.unsplash.com/photo-1595858641154-1c667084511f?auto=format&fit=crop&w=600' 
+    avatar: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&q=80&w=150', 
+    image: 'https://images.unsplash.com/photo-1592841200221-a6898f307baa?auto=format&fit=crop&w=600' 
   },
   { 
     id: 3, 
-    title: 'French Breakfast Radishes', 
-    price: '$3.00 / bunch', 
+    title: 'Fresh Compost (5 gal)', 
+    price: '$12.00', 
     type: 'sale', 
     location: 'Oak Street Co-op', 
-    distance: '1.5 mi', 
+    distance: '2.5 mi', 
     user: 'Elena R.', 
     avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=150', 
-    image: 'https://images.unsplash.com/photo-1593335553593-36c1e57c6b54?auto=format&fit=crop&w=600' 
+    image: 'https://images.unsplash.com/photo-1605366406977-83281be2d7b4?auto=format&fit=crop&w=600' 
   },
   { 
     id: 4, 
-    title: 'Vintage Hand Trowel', 
-    price: 'Trade', 
-    type: 'trade', 
+    title: 'Mint & Basil Cuttings', 
+    price: 'Free', 
+    type: 'swap', 
     location: 'Westside Urban Farm', 
-    distance: '3.0 mi', 
+    distance: '0.5 mi', 
     user: 'David K.', 
-    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=150', 
-    image: 'https://images.unsplash.com/photo-1416879598555-22bcf2ebce10?auto=format&fit=crop&w=600' 
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150', 
+    image: 'https://images.unsplash.com/photo-1628155930542-3c7a64e2c833?auto=format&fit=crop&w=600' 
   },
 ];
 
-const categories = ["All", "Vegetables", "Fruits", "Seeds", "Tools"];
+const categories = ['All', 'Produce', 'Seeds', 'Tools', 'Compost'];
 
 export default function Market() {
-  const [activeCategory, setActiveCategory] = useState("All");
+  const [activeTab, setActiveTab] = useState('All');
+  const [showMap, setShowMap] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   return (
@@ -144,24 +146,41 @@ export default function Market() {
       </div>
 
       <div className="relative overflow-hidden rounded-[2.5rem] shadow-lg h-72 md:h-80 group">
-        <img 
-          src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=2000" 
-          alt="Map Background" 
-          className="absolute inset-0 object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-800/60 to-gray-500/30 backdrop-blur-[2px]"></div>
-        
-        <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
-          <h2 className="mb-3 text-3xl font-extrabold text-white md:text-4xl drop-shadow-md">
-            Discover your local foodshed
-          </h2>
-          <p className="max-w-xl mb-8 text-sm font-medium text-gray-200 md:text-base drop-shadow-md">
-            Explore the interactive map to find nearby growers, available plots, and community hubs.
-          </p>
-          <Button className="px-8 font-bold text-white bg-green-700 rounded-full h-11 hover:bg-green-800">
-            Open Map View
-          </Button>
-        </div>
+        {showMap ? (
+          <div className="absolute inset-0 z-10 w-full h-full bg-gray-100">
+            <MapComponent city="Casablanca" />
+            <Button 
+              onClick={() => setShowMap(false)} 
+              className="absolute z-20 px-4 py-2 font-bold text-gray-700 bg-white shadow-md top-4 right-4 rounded-full hover:bg-gray-50"
+            >
+              Close Map
+            </Button>
+          </div>
+        ) : (
+          <>
+            <img 
+              src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=2000" 
+              alt="Map Background" 
+              className="absolute inset-0 object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-800/60 to-gray-500/30 backdrop-blur-[2px]"></div>
+            
+            <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+              <h2 className="mb-3 text-3xl font-extrabold text-white md:text-4xl drop-shadow-md">
+                Discover your local foodshed
+              </h2>
+              <p className="max-w-xl mb-8 text-sm font-medium text-gray-200 md:text-base drop-shadow-md">
+                Explore the interactive map to find nearby growers, available plots, and community hubs.
+              </p>
+              <Button 
+                onClick={() => setShowMap(true)}
+                className="px-8 font-bold text-white bg-green-700 rounded-full h-11 hover:bg-green-800"
+              >
+                Open Map View
+              </Button>
+            </div>
+          </>
+        )}
       </div>
 
     </div>
