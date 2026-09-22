@@ -16,7 +16,7 @@ export default function AdminDashboard() {
         const [statsRes, usersRes, gardensRes] = await Promise.all([
           api.get('/admin/stats'),
           api.get('/admin/users'),
-          api.get('/admin/gardens?size=100'), // fetching up to 100 gardens for simplicity
+          api.get('/admin/gardens?size=100'),
         ]);
         setStats(statsRes.data);
         setUsers(usersRes.data);
@@ -73,7 +73,7 @@ export default function AdminDashboard() {
             <ShoppingBag className="w-4 h-4 text-orange-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-gray-900">{stats?.totalProducts || 0}</div>
+            <div className="text-2xl font-bold text-gray-900">{stats?.totalProduct || 0}</div>
           </CardContent>
         </Card>
 
