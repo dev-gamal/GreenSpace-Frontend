@@ -20,7 +20,6 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import MapComponent from '../components/MapComponent';
 import { useAuth } from '../context/AuthContext';
 import {
   getMarketProducts,
@@ -48,8 +47,6 @@ export default function Market() {
   const { user } = useAuth();
 
   const [exchangeType, setExchangeType] = useState('SALE');
-  const [city, setCity] = useState(user?.city || '');
-  const [cityInput, setCityInput] = useState(user?.city || '');
   const [activeProductType, setActiveProductType] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -58,8 +55,8 @@ export default function Market() {
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  const [showMap, setShowMap] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
@@ -81,17 +78,10 @@ export default function Market() {
     product.publisherId === user?.id || user?.role === 'ADMIN';
 
   const fetchProducts = useCallback(async () => {
-    if (!city.trim()) {
-      setProducts([]);
-      setTotalPages(0);
-      setLoading(false);
-      return;
-    }
-
     setLoading(true);
     setError(null);
     try {
-      const data = await getMarketProducts(exchangeType, city, page, 12);
+      const data = await getMarketProducts(exchangeType, '', page, 12);
       setProducts(data.content || []);
       setTotalPages(data.totalPages || 0);
     } catch (err) {
@@ -101,20 +91,12 @@ export default function Market() {
     } finally {
       setLoading(false);
     }
-  }, [exchangeType, city, page]);
+  }, [exchangeType, page, refreshKey]);
 
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
 
-  const handleCitySearch = () => {
-    setCity(cityInput.trim());
-    setPage(0);
-  };
-
-  const handleCityKeyDown = (e) => {
-    if (e.key === 'Enter') handleCitySearch();
-  };
 
   const filteredProducts = products.filter((p) => {
     if (activeProductType && p.productType !== activeProductType) return false;
@@ -175,6 +157,7 @@ export default function Market() {
 
       await createProduct(payload, user.id, formData.imageUrl || DEFAULT_IMAGE);
 
+      setExchangeType(formData.exchangeType);
       setShowAddForm(false);
       setFormData({
         title: '',
@@ -186,7 +169,7 @@ export default function Market() {
         imageUrl: '',
       });
       setPage(0);
-      fetchProducts();
+      setRefreshKey((k) => k + 1);
     } catch (err) {
       console.error('Error creating product:', err);
       setFormError(
@@ -214,7 +197,6 @@ export default function Market() {
 
   return (
     <div className="container px-4 py-8 mx-auto max-w-7xl md:px-8 md:py-12">
-      {/* Header */}
       <div className="max-w-2xl mx-auto mb-10 text-center">
         <h1 className="mb-4 text-3xl font-extrabold text-gray-900 md:text-5xl">
           Community Marketplace
@@ -226,27 +208,7 @@ export default function Market() {
 
       <div className="flex flex-col gap-4 mb-6">
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row bg-white p-2 rounded-full border border-gray-100 shadow-sm">
-          <div className="relative w-full md:w-1/3">
-            <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-              <MapPin size={18} className="text-gray-400" />
-            </div>
-            <input
-              type="text"
-              placeholder="Search by city..."
-              className="w-full py-2.5 pl-11 pr-20 text-sm bg-gray-50 border-none rounded-full focus:outline-none focus:ring-2 focus:ring-green-500/20"
-              value={cityInput}
-              onChange={(e) => setCityInput(e.target.value)}
-              onKeyDown={handleCityKeyDown}
-            />
-            <button
-              onClick={handleCitySearch}
-              className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1.5 text-xs font-semibold text-white bg-green-700 rounded-full hover:bg-green-800 transition-colors"
-            >
-              Search
-            </button>
-          </div>
-
-          <div className="relative w-full md:w-1/3">
+          <div className="relative w-full md:w-1/2">
             <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
               <Search size={18} className="text-gray-400" />
             </div>
@@ -259,6 +221,7 @@ export default function Market() {
             />
           </div>
 
+          {/* Exchange type toggle */}
           <div className="flex gap-2 px-2">
             {EXCHANGE_TYPES.map((et) => (
               <button
@@ -321,15 +284,6 @@ export default function Market() {
         </div>
       )}
 
-      {!city.trim() && !loading && (
-        <div className="text-center py-16">
-          <MapPin size={48} className="mx-auto mb-4 text-gray-300" />
-          <h3 className="text-lg font-bold text-gray-700 mb-2">Enter your city to explore</h3>
-          <p className="text-sm text-gray-500">
-            Type a city name above and press Search to find products near you.
-          </p>
-        </div>
-      )}
 
       {loading && (
         <div className="flex items-center justify-center py-20">
@@ -337,12 +291,12 @@ export default function Market() {
         </div>
       )}
 
-      {!loading && city.trim() && filteredProducts.length === 0 && !error && (
+      {!loading && filteredProducts.length === 0 && !error && (
         <div className="text-center py-16">
           <Package size={48} className="mx-auto mb-4 text-gray-300" />
           <h3 className="text-lg font-bold text-gray-700 mb-2">No products found</h3>
           <p className="text-sm text-gray-500 mb-4">
-            Try a different city, change the exchange type, or adjust your filters.
+            Try changing the exchange type or adjusting your filters.
           </p>
           {canPublish && (
             <Button
@@ -464,43 +418,6 @@ export default function Market() {
         </div>
       )}
 
-      <div className="relative overflow-hidden rounded-[2.5rem] shadow-lg h-72 md:h-80 group">
-        {showMap ? (
-          <div className="absolute inset-0 z-10 w-full h-full bg-gray-100">
-            <MapComponent city={city || 'Casablanca'} />
-            <Button
-              onClick={() => setShowMap(false)}
-              className="absolute z-20 px-4 py-2 font-bold text-gray-700 bg-white shadow-md top-4 right-4 rounded-full hover:bg-gray-50"
-            >
-              Close Map
-            </Button>
-          </div>
-        ) : (
-          <>
-            <img
-              src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=2000"
-              alt="Map Background"
-              className="absolute inset-0 object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-800/60 to-gray-500/30 backdrop-blur-[2px]"></div>
-
-            <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
-              <h2 className="mb-3 text-3xl font-extrabold text-white md:text-4xl drop-shadow-md">
-                Discover your local foodshed
-              </h2>
-              <p className="max-w-xl mb-8 text-sm font-medium text-gray-200 md:text-base drop-shadow-md">
-                Explore the interactive map to find nearby growers, available plots, and community hubs.
-              </p>
-              <Button
-                onClick={() => setShowMap(true)}
-                className="px-8 font-bold text-white bg-green-700 rounded-full h-11 hover:bg-green-800"
-              >
-                Open Map View
-              </Button>
-            </div>
-          </>
-        )}
-      </div>
 
       {(selectedProduct || detailLoading) && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
