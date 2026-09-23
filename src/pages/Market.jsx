@@ -26,6 +26,7 @@ import {
   getProductById,
   createProduct,
   deleteProduct,
+  updateProductStatus,
 } from '../api/productService';
 
 const PRODUCT_TYPES = [
@@ -132,6 +133,21 @@ export default function Market() {
     } catch (err) {
       console.error('Error deleting product:', err);
       alert(err.response?.data?.message || 'Failed to delete product.');
+    }
+  };
+
+  const handleStatusChange = async (productId, newStatus) => {
+    try {
+      await updateProductStatus(productId, user.id, newStatus);
+      setProducts((prev) =>
+        prev.map((p) => (p.id === productId ? { ...p, status: newStatus } : p))
+      );
+      if (selectedProduct?.id === productId) {
+        setSelectedProduct((prev) => ({ ...prev, status: newStatus }));
+      }
+    } catch (err) {
+      console.error('Error updating product status:', err);
+      alert(err.response?.data?.message || 'Failed to update status.');
     }
   };
 
@@ -336,8 +352,15 @@ export default function Market() {
                   {product.exchangeType === 'BARTER' && <ArrowLeftRight size={12} />}
                   {formatPrice(product)}
                 </div>
-                <div className="absolute top-3 left-3 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase bg-white/90 text-gray-700 shadow-sm backdrop-blur-sm">
-                  {product.productType}
+                <div className="absolute top-3 left-3 flex gap-2">
+                  <div className="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase bg-white/90 text-gray-700 shadow-sm backdrop-blur-sm">
+                    {product.productType}
+                  </div>
+                  {product.status && product.status !== 'AVAILABLE' && (
+                    <div className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase shadow-sm backdrop-blur-sm text-white ${product.status === 'RESERVED' ? 'bg-orange-500' : 'bg-gray-500'}`}>
+                      {product.status}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -486,9 +509,21 @@ export default function Market() {
                       <p className="text-[10px] font-bold uppercase text-gray-400 mb-1">
                         Status
                       </p>
-                      <p className="text-sm font-bold text-gray-900">
-                        {selectedProduct.status}
-                      </p>
+                      {canDelete(selectedProduct) ? (
+                        <select
+                          value={selectedProduct.status}
+                          onChange={(e) => handleStatusChange(selectedProduct.id, e.target.value)}
+                          className="w-full text-sm font-bold bg-transparent border-0 border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-green-600 text-gray-900 p-0 pb-1 cursor-pointer"
+                        >
+                          <option value="AVAILABLE">AVAILABLE</option>
+                          <option value="EXCHANGED">EXCHANGED</option>
+                          <option value="RESERVED">RESERVED</option>
+                        </select>
+                      ) : (
+                        <p className="text-sm font-bold text-gray-900">
+                          {selectedProduct.status}
+                        </p>
+                      )}
                     </div>
                     <div className="p-3 bg-gray-50 rounded-xl">
                       <p className="text-[10px] font-bold uppercase text-gray-400 mb-1">

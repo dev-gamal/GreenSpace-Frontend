@@ -121,7 +121,7 @@ export default function Dashboard() {
       bg: "bg-gradient-to-br from-orange-50 to-orange-100/50",
     },
     {
-      title: isOwner ? "Waiting demands" : "Mes Réservations",
+      title: isOwner ? "Waiting demands" : "My reservations",
       value: isOwner ? pendingRequests : data.reservations.length,
       icon: <ClipboardList size={20} className="text-yellow-700" />,
       bg: "bg-gradient-to-br from-yellow-50 to-yellow-100/50",

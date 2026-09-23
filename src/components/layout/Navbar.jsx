@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Search, Bell, LogOut } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import logo from '../../assets/logo.jpg';
 
@@ -42,12 +42,6 @@ export default function Navbar() {
 
         {/* Actions & Profil */}
         <div className="flex items-center gap-4">
-          <div className="hidden gap-4 text-gray-400 md:flex">
-            <button className="hover:text-gray-600"><Search size={20} /></button>
-            <button className="hover:text-gray-600"><Bell size={20} /></button>
-          </div>
-          
-          <div className="hidden w-px h-6 bg-gray-200 md:block"></div>
 
           <div className="flex items-center gap-2">
             {user ? (

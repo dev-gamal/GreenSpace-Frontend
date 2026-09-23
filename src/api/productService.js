@@ -37,3 +37,10 @@ export const deleteProduct = async (id, publisherId) => {
     params: { publisherId },
   });
 };
+
+export const updateProductStatus = async (id, publisherId, status) => {
+  const response = await api.put(`/products/${id}/status`, null, {
+    params: { publisherId, status },
+  });
+  return response.data;
+};
