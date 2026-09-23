@@ -11,7 +11,7 @@ const defaultCenter = {
   lng: -7.5898
 };
 
-const MapComponent = ({ address, city, lat, lng }) => {
+const MapComponent = ({ address, city, lat, lng, onLocationSelect }) => {
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || ''
@@ -42,6 +42,15 @@ const MapComponent = ({ address, city, lat, lng }) => {
     }
   }, [isLoaded, address, city, lat, lng]);
 
+  const handleMapClick = (e) => {
+    if (onLocationSelect) {
+      const lat = e.latLng.lat();
+      const lng = e.latLng.lng();
+      setMarkerPosition({ lat, lng });
+      onLocationSelect(lat, lng);
+    }
+  };
+
   if (loadError) {
     return <div className="flex items-center justify-center w-full h-full text-gray-500 bg-gray-100">Error loading maps</div>;
   }
@@ -55,9 +64,11 @@ const MapComponent = ({ address, city, lat, lng }) => {
       mapContainerStyle={containerStyle}
       center={center}
       zoom={13}
+      onClick={handleMapClick}
       options={{
         disableDefaultUI: true,
         zoomControl: true,
+        draggableCursor: onLocationSelect ? 'crosshair' : 'grab'
       }}
     >
       {markerPosition && (

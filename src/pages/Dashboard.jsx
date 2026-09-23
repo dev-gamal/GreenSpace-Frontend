@@ -14,15 +14,18 @@ import {
   Trash2,
   MapPin,
   Maximize2,
+  Plus,
+  ArrowLeftRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "../context/AuthContext";
 import api from "../api/axiosConfig";
+import { getProductsByPublisher, deleteProduct, updateProductStatus } from "../api/productService";
 
 export default function Dashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [data, setData] = useState({ gardens: [], reservations: [] });
+  const [data, setData] = useState({ gardens: [], reservations: [], products: [] });
   const [loading, setLoading] = useState(true);
 
   const isOwner = user?.role === "OWNER";
@@ -71,6 +74,35 @@ export default function Dashboard() {
     }
   };
 
+  const handleDeleteProduct = async (productId) => {
+    if (!window.confirm("Are you sure you want to delete this product?")) return;
+    try {
+      await deleteProduct(productId, user.id);
+      setData((prev) => ({
+        ...prev,
+        products: prev.products.filter((p) => p.id !== productId),
+      }));
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      alert(error.response?.data?.message || "Failed to delete product.");
+    }
+  };
+
+  const handleProductStatusChange = async (productId, newStatus) => {
+    try {
+      await updateProductStatus(productId, user.id, newStatus);
+      setData((prev) => ({
+        ...prev,
+        products: prev.products.map((p) =>
+          p.id === productId ? { ...p, status: newStatus } : p,
+        ),
+      }));
+    } catch (error) {
+      console.error("Error updating product status:", error);
+      alert(error.response?.data?.message || "Failed to update status.");
+    }
+  };
+
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
@@ -82,13 +114,16 @@ export default function Dashboard() {
           setData({
             gardens: gardensRes.data.content || [],
             reservations: requestsRes.data.content || [],
+            products: [],
           });
         } else {
           const gardensRes = await api.get(`/garden/search?city=&minArea=0`);
           const myRes = await api.get(`/reservations/gardener/${user.id}`);
+          const productsRes = await getProductsByPublisher(user.id);
           setData({
             gardens: gardensRes.data.content || [],
             reservations: myRes.data.content || [],
+            products: productsRes.content || [],
           });
         }
       } catch (error) {
@@ -149,12 +184,6 @@ export default function Dashboard() {
             </p>
           </div>
         </div>
-        <Button
-          variant="outline"
-          className="hidden md:flex bg-gray-100/50 border-gray-200 text-gray-700 rounded-full h-9"
-        >
-          <span className="text-xs mr-1">✏️</span> Edit Profile
-        </Button>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -266,6 +295,117 @@ export default function Dashboard() {
                       </button>
                       <button
                         onClick={() => handleDeleteGarden(garden.id)}
+                        className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold text-red-600 bg-red-50 rounded-full hover:bg-red-100 transition-colors"
+                      >
+                        <Trash2 size={12} /> Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {!isOwner && (
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold text-gray-900">My Products</h2>
+            <Link
+              to="/market"
+              className="text-sm font-semibold text-green-700 flex items-center gap-1 hover:underline"
+            >
+              <Plus size={16} /> Add Product
+            </Link>
+          </div>
+          {loading ? (
+            <div className="bg-white p-4 rounded-3xl border border-gray-100 shadow-sm text-gray-500 animate-pulse">
+              Loading products...
+            </div>
+          ) : data.products.length === 0 ? (
+            <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm text-center">
+              <p className="text-gray-500 mb-4">
+                You haven't listed any products yet.
+              </p>
+              <Link to="/market">
+                <Button className="bg-green-700 hover:bg-green-800 rounded-full">
+                  List Your First Product
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {data.products.map((product) => (
+                <div
+                  key={product.id}
+                  className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden group"
+                >
+                  <div className="relative h-36 overflow-hidden bg-gray-200">
+                    <img
+                      src={
+                        product.imageUrl ||
+                        "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&q=80&w=800"
+                      }
+                      alt={product.title}
+                      className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute top-3 left-3 flex gap-2">
+                      <div className="px-2.5 py-1 text-[10px] font-bold uppercase rounded-lg bg-white/90 text-gray-700 backdrop-blur-sm">
+                        {product.productType}
+                      </div>
+                      <div
+                        className={`px-2.5 py-1 text-[10px] font-bold uppercase rounded-lg text-white ${
+                          product.status === "AVAILABLE"
+                            ? "bg-green-700"
+                            : product.status === "RESERVED"
+                              ? "bg-orange-500"
+                              : "bg-gray-500"
+                        }`}
+                      >
+                        {product.status}
+                      </div>
+                    </div>
+                    <div
+                      className={`absolute top-3 right-3 px-2.5 py-1 text-[10px] font-bold rounded-lg flex items-center gap-1 shadow-sm ${
+                        product.exchangeType === "BARTER"
+                          ? "bg-amber-100 text-amber-800"
+                          : "bg-green-800 text-white"
+                      }`}
+                    >
+                      {product.exchangeType === "BARTER" && <ArrowLeftRight size={10} />}
+                      {product.exchangeType === "BARTER"
+                        ? "Barter"
+                        : product.price
+                          ? `${product.price.toFixed(2)} MAD`
+                          : "Free"}
+                    </div>
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-bold text-gray-900 text-sm truncate mb-1">
+                      {product.title}
+                    </h3>
+                    {product.description && (
+                      <p className="text-xs text-gray-500 line-clamp-1 mb-3">
+                        {product.description}
+                      </p>
+                    )}
+                    <div className="mb-3">
+                      <select
+                        value={product.status}
+                        onChange={(e) =>
+                          handleProductStatusChange(product.id, e.target.value)
+                        }
+                        className="w-full text-xs font-semibold p-1.5 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-green-500 text-gray-700 bg-gray-50 hover:bg-gray-100 transition-colors"
+                      >
+                        <option value="AVAILABLE">AVAILABLE</option>
+                        <option value="RESERVED">RESERVED</option>
+                        <option value="EXCHANGED">EXCHANGED</option>
+                      </select>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleDeleteProduct(product.id)}
                         className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold text-red-600 bg-red-50 rounded-full hover:bg-red-100 transition-colors"
                       >
                         <Trash2 size={12} /> Delete

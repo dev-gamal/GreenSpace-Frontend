@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axiosConfig';
+import MapComponent from '../components/MapComponent';
 import { Leaf, MapPin, Ruler, Camera, CheckSquare, AlignLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -211,37 +212,26 @@ export default function AddGarden() {
                   </div>
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-                <div>
-                  <label className={labelClass}>Latitude</label>
-                  <div className="relative">
-                    <MapPin className="absolute text-gray-400 left-3 top-3.5" size={16} />
-                    <input
-                      type="number"
-                      step="any"
-                      name="latitude"
-                      value={formData.latitude}
-                      onChange={handleChange}
-                      placeholder="e.g. 33.5731"
-                      className={inputClass}
-                    />
-                  </div>
+
+              <div className="mt-6">
+                <label className={labelClass}>Pinpoint Exact Location</label>
+                <p className="text-xs text-gray-500 mb-2">Click on the map to set the exact latitude and longitude instead of entering an address manually.</p>
+                <div className="w-full h-64 bg-gray-200 rounded-2xl overflow-hidden mb-3">
+                  <MapComponent 
+                    address={formData.address}
+                    city={formData.city}
+                    lat={formData.latitude}
+                    lng={formData.longitude}
+                    onLocationSelect={(lat, lng) => {
+                      setFormData(prev => ({ ...prev, latitude: lat, longitude: lng }));
+                    }}
+                  />
                 </div>
-                <div>
-                  <label className={labelClass}>Longitude</label>
-                  <div className="relative">
-                    <MapPin className="absolute text-gray-400 left-3 top-3.5" size={16} />
-                    <input
-                      type="number"
-                      step="any"
-                      name="longitude"
-                      value={formData.longitude}
-                      onChange={handleChange}
-                      placeholder="e.g. -7.5898"
-                      className={inputClass}
-                    />
-                  </div>
-                </div>
+                {formData.latitude && formData.longitude && (
+                  <p className="text-xs font-semibold text-green-700">
+                    Selected Location: {Number(formData.latitude).toFixed(5)}, {Number(formData.longitude).toFixed(5)}
+                  </p>
+                )}
               </div>
             </div>
 

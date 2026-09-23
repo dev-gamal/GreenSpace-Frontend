@@ -167,8 +167,8 @@ export default function LandDetails() {
           )}
 
           <section className="py-8">
-            <h2 className="mb-2 text-lg font-bold text-gray-900">Approximate Location</h2>
-            <p className="mb-6 text-sm text-gray-500">{garden?.address ? `${garden.address}, ${garden.city}` : garden?.city}. Exact location provided after booking.</p>
+            <h2 className="mb-2 text-lg font-bold text-gray-900">Exact Location</h2>
+            <p className="mb-6 text-sm text-gray-500">{garden?.address ? `${garden.address}, ${garden.city}` : garden?.city}</p>
             <div className="w-full overflow-hidden bg-gray-200 h-60 rounded-3xl">
               <MapComponent address={garden?.address} city={garden?.city} lat={garden?.latitude} lng={garden?.longitude} />
             </div>
