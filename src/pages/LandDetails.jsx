@@ -16,6 +16,9 @@ export default function LandDetails() {
   const [garden, setGarden] = useState(null);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState(false);
+  const [showReserveModal, setShowReserveModal] = useState(false);
+  const [reserveForm, setReserveForm] = useState({ startDate: '', endDate: '', requestMessage: '' });
+  const [reserving, setReserving] = useState(false);
 
   const canManage = user && (user.role === 'ADMIN' || user.id === garden?.ownerId);
 
@@ -43,6 +46,28 @@ export default function LandDetails() {
     }
   };
 
+
+  const handleReserve = async (e) => {
+    e.preventDefault();
+    if (!user || user.role !== 'GARDENER') return;
+    setReserving(true);
+    try {
+      await api.post(`/reservations?gardenerId=${user.id}`, {
+        gardenId: parseInt(id),
+        startDate: reserveForm.startDate,
+        endDate: reserveForm.endDate,
+        requestMessage: reserveForm.requestMessage
+      });
+      alert('Reservation requested successfully!');
+      setShowReserveModal(false);
+      setReserveForm({ startDate: '', endDate: '', requestMessage: '' });
+    } catch (error) {
+      console.error('Error reserving garden:', error);
+      alert(error.response?.data?.message || error.response?.data?.validationErrors?.join(', ') || 'Failed to submit reservation.');
+    } finally {
+      setReserving(false);
+    }
+  };
 
   useEffect(() => {
     const fetchGardenDetails = async () => {
@@ -211,9 +236,16 @@ export default function LandDetails() {
                 >
                   Send Message <ArrowRight size={18} />
                 </Button>
-                <Button variant="outline" className="w-full h-12 text-sm font-bold text-gray-700 border-gray-200 rounded-full hover:bg-gray-50">
-                  Save to Favorites
-                </Button>
+                {user?.role === 'GARDENER' && (
+                  <Button 
+                    variant="outline" 
+                    className="w-full h-12 text-sm font-bold text-green-700 border-green-200 rounded-full hover:bg-green-50"
+                    onClick={() => setShowReserveModal(true)}
+                    disabled={garden?.status !== 'AVAILABLE'}
+                  >
+                    {garden?.status === 'AVAILABLE' ? 'Reserve this Garden' : 'Not Available'}
+                  </Button>
+                )}
               </div>
               
               <p className="mt-4 text-xs font-medium text-center text-gray-400">You won't be charged yet</p>
@@ -233,6 +265,52 @@ export default function LandDetails() {
         </div>
 
       </div>
+      
+      {showReserveModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="w-full max-w-md p-6 bg-white rounded-2xl shadow-xl">
+            <h2 className="mb-4 text-2xl font-bold text-gray-900">Reserve Garden</h2>
+            <form onSubmit={handleReserve} className="space-y-4">
+              <div>
+                <label className="block mb-1 text-sm font-medium text-gray-700">Start Date</label>
+                <input
+                  type="date"
+                  required
+                  value={reserveForm.startDate}
+                  onChange={e => setReserveForm({...reserveForm, startDate: e.target.value})}
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
+                />
+              </div>
+              <div>
+                <label className="block mb-1 text-sm font-medium text-gray-700">End Date</label>
+                <input
+                  type="date"
+                  required
+                  value={reserveForm.endDate}
+                  onChange={e => setReserveForm({...reserveForm, endDate: e.target.value})}
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
+                />
+              </div>
+              <div>
+                <label className="block mb-1 text-sm font-medium text-gray-700">Message (Optional)</label>
+                <textarea
+                  rows={3}
+                  value={reserveForm.requestMessage}
+                  onChange={e => setReserveForm({...reserveForm, requestMessage: e.target.value})}
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
+                  placeholder="Introduce yourself and explain what you plan to grow..."
+                />
+              </div>
+              <div className="flex justify-end gap-3 pt-2">
+                <Button type="button" variant="outline" onClick={() => setShowReserveModal(false)}>Cancel</Button>
+                <Button type="submit" className="bg-green-600 hover:bg-green-700 text-white" disabled={reserving}>
+                  {reserving ? 'Submitting...' : 'Submit Request'}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

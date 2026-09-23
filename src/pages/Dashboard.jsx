@@ -57,6 +57,21 @@ export default function Dashboard() {
     }
   };
 
+  const handleReservationStatus = async (reservationId, status) => {
+    try {
+      await api.put(`/reservations/${reservationId}/status?ownerId=${user.id}&status=${status}`);
+      setData((prev) => ({
+        ...prev,
+        reservations: prev.reservations.map((r) =>
+          r.id === reservationId ? { ...r, status } : r,
+        ),
+      }));
+    } catch (error) {
+      console.error("Error updating reservation status:", error);
+      alert(error.response?.data?.message || "Failed to update status.");
+    }
+  };
+
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
@@ -169,12 +184,6 @@ export default function Dashboard() {
         <div>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold text-gray-900">My Gardens</h2>
-            <Link
-              to="/garden/add"
-              className="text-sm font-semibold text-green-700 flex items-center gap-1 hover:underline"
-            >
-              <Plus size={16} /> Add Garden
-            </Link>
           </div>
           {loading ? (
             <div className="bg-white p-4 rounded-3xl border border-gray-100 shadow-sm text-gray-500 animate-pulse">
@@ -311,16 +320,26 @@ export default function Dashboard() {
                   </div>
                   <div className="flex items-center gap-2">
                     <span
-                      className={`px-3 py-1 text-xs font-semibold rounded-full flex items-center gap-1 ${res.status === "PENDING" ? "bg-yellow-100 text-yellow-800" : "bg-green-100 text-green-800"}`}
+                      className={`px-3 py-1 text-xs font-semibold rounded-full flex items-center gap-1 ${
+                        res.status === "PENDING" ? "bg-yellow-100 text-yellow-800" :
+                        res.status === "ACCEPTED" ? "bg-green-100 text-green-800" :
+                        "bg-red-100 text-red-800"
+                      }`}
                     >
-                      {res.status === "PENDING" ? "Pending" : "Approved"}
+                      {res.status}
                     </span>
                     {isOwner && res.status === "PENDING" && (
                       <div className="hidden md:flex gap-1">
-                        <button className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:text-red-600">
+                        <button 
+                          onClick={() => handleReservationStatus(res.id, 'REJECTED')}
+                          className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:text-red-600"
+                        >
                           <X size={16} />
                         </button>
-                        <button className="w-8 h-8 rounded-full bg-green-700 flex items-center justify-center text-white hover:bg-green-800">
+                        <button 
+                          onClick={() => handleReservationStatus(res.id, 'ACCEPTED')}
+                          className="w-8 h-8 rounded-full bg-green-700 flex items-center justify-center text-white hover:bg-green-800"
+                        >
                           <CheckCircle2 size={16} />
                         </button>
                       </div>
