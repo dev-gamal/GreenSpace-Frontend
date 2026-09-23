@@ -169,12 +169,6 @@ export default function Home() {
                 : "Discover unused urban spaces ready for transformation. Connect with owners offering fertile ground for your next project."}
             </p>
           </div>
-          <Button
-            variant="link"
-            className="flex items-center gap-2 font-bold text-green-700 text-base p-0 hover:no-underline hover:text-green-800"
-          >
-            Explore Map View <span>→</span>
-          </Button>
         </div>
 
         {loading ? (

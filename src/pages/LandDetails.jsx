@@ -226,16 +226,18 @@ export default function LandDetails() {
               )}
 
               <div className="space-y-3">
-                <Button
-                  onClick={() => {
-                    if (garden?.ownerId) {
-                      navigate(`/messages?userId=${garden.ownerId}&userName=${encodeURIComponent(garden.ownerName || 'Host')}`);
-                    }
-                  }}
-                  className="w-full h-12 gap-2 text-base font-bold text-white bg-green-700 rounded-full hover:bg-green-800"
-                >
-                  Send Message <ArrowRight size={18} />
-                </Button>
+                {user?.id !== garden?.ownerId && (
+                  <Button
+                    onClick={() => {
+                      if (garden?.ownerId) {
+                        navigate(`/messages?userId=${garden.ownerId}&userName=${encodeURIComponent(garden.ownerName || 'Host')}`);
+                      }
+                    }}
+                    className="w-full h-12 gap-2 text-base font-bold text-white bg-green-700 rounded-full hover:bg-green-800"
+                  >
+                    Send Message <ArrowRight size={18} />
+                  </Button>
+                )}
                 {user?.role === 'GARDENER' && (
                   <Button 
                     variant="outline" 

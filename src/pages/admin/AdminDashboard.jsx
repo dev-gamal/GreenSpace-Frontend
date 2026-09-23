@@ -10,6 +10,8 @@ export default function AdminDashboard() {
   const [gardens, setGardens] = useState([]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [userSearchQuery, setUserSearchQuery] = useState('');
+  const [selectedUser, setSelectedUser] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,6 +42,44 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error("Error updating user.", error);
       alert("Error updating user.");
+    }
+  };
+
+  const handleSearchUsers = async () => {
+    if (!userSearchQuery.trim()) {
+      try {
+        const usersRes = await api.get('/admin/users');
+        setUsers(usersRes.data);
+      } catch (error) {
+        console.error("Error loading users", error);
+      }
+      return;
+    }
+    try {
+      const res = await api.get(`/admin/users/search?query=${encodeURIComponent(userSearchQuery)}`);
+      setUsers(res.data);
+    } catch (error) {
+      console.error("Error searching users", error);
+    }
+  };
+
+  const handleViewUser = async (userId) => {
+    try {
+      const res = await api.get(`/admin/users/${userId}`);
+      setSelectedUser(res.data);
+      alert(`User Details:\nName: ${res.data.firstName} ${res.data.lastName}\nEmail: ${res.data.email}\nRole: ${res.data.role}\nJoined: ${res.data.createdAt}`);
+    } catch (error) {
+      console.error("Error fetching user details", error);
+    }
+  };
+
+  const handleUpdateGardenStatus = async (gardenId, newStatus) => {
+    try {
+      await api.put(`/admin/gardens/${gardenId}/status?status=${newStatus}`);
+      setGardens(gardens.map(g => g.id === gardenId ? { ...g, status: newStatus } : g));
+    } catch (error) {
+      console.error("Error updating garden status", error);
+      alert("Error updating garden status.");
     }
   };
 
@@ -92,8 +132,23 @@ export default function AdminDashboard() {
       </div>
 
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Users management</CardTitle>
+          <div className="flex gap-2">
+            <input 
+              type="text" 
+              placeholder="Search users..." 
+              value={userSearchQuery}
+              onChange={(e) => setUserSearchQuery(e.target.value)}
+              className="border px-2 py-1 rounded text-sm"
+            />
+            <button 
+              onClick={handleSearchUsers}
+              className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700"
+            >
+              Search
+            </button>
+          </div>
         </CardHeader>
         <CardContent>
           {users.length === 0 ? (
@@ -132,7 +187,13 @@ export default function AdminDashboard() {
                         <span className="text-green-500 flex items-center gap-1"><CheckCircle className="w-4 h-4"/> Active</span>
                       )}
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right flex items-center justify-end gap-2">
+                      <button 
+                        onClick={() => handleViewUser(user.id)}
+                        className="px-3 py-1 text-sm text-gray-700 bg-gray-200 rounded hover:bg-gray-300 transition-colors"
+                      >
+                        View
+                      </button>
                       {user.role !== 'ADMIN' && (
                         <button 
                           onClick={() => toggleUserBlock(user.id)}
@@ -164,6 +225,7 @@ export default function AdminDashboard() {
                   <TableHead>Location</TableHead>
                   <TableHead>Size (m²)</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -181,6 +243,17 @@ export default function AdminDashboard() {
                       }`}>
                         {garden.status}
                       </span>
+                    </TableCell>
+                    <TableCell className="text-right flex items-center justify-end gap-2">
+                      <select 
+                        value={garden.status}
+                        onChange={(e) => handleUpdateGardenStatus(garden.id, e.target.value)}
+                        className="border rounded px-2 py-1 text-sm bg-white"
+                      >
+                        <option value="AVAILABLE">Available</option>
+                        <option value="RESERVED">Reserved</option>
+                        <option value="ARCHIVED">Archived</option>
+                      </select>
                     </TableCell>
                   </TableRow>
                 ))}
