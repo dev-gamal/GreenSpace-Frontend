@@ -8,19 +8,22 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState(null);
   const [users, setUsers] = useState([]);
   const [gardens, setGardens] = useState([]);
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [statsRes, usersRes, gardensRes] = await Promise.all([
+        const [statsRes, usersRes, gardensRes, productsRes] = await Promise.all([
           api.get('/admin/stats'),
           api.get('/admin/users'),
           api.get('/admin/gardens?size=100'),
+          api.get('/admin/products?size=100'),
         ]);
         setStats(statsRes.data);
         setUsers(usersRes.data);
         setGardens(gardensRes.data?.content || []);
+        setProducts(productsRes.data?.content || []);
       } catch (error) {
         console.error("Error loading admin data", error);
       } finally {
@@ -177,6 +180,48 @@ export default function AdminDashboard() {
                             : 'text-gray-700 bg-gray-100'
                       }`}>
                         {garden.status}
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Products management</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {products.length === 0 ? (
+            <div className="py-8 text-center text-gray-500">No products found.</div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Title</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Exchange</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {products.map((product) => (
+                  <TableRow key={product.id}>
+                    <TableCell className="font-medium">{product.title}</TableCell>
+                    <TableCell>{product.productType}</TableCell>
+                    <TableCell>{product.exchangeType}</TableCell>
+                    <TableCell>
+                      <span className={`px-2 py-1 text-xs rounded-full ${
+                        product.status === 'AVAILABLE' 
+                          ? 'text-green-700 bg-green-100' 
+                          : product.status === 'RESERVED' 
+                            ? 'text-orange-700 bg-orange-100' 
+                            : 'text-gray-700 bg-gray-100'
+                      }`}>
+                        {product.status}
                       </span>
                     </TableCell>
                   </TableRow>
