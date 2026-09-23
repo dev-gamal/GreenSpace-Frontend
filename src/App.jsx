@@ -16,6 +16,9 @@ import Error403 from "./pages/errors/Error403";
 import Error404 from "./pages/errors/Error404";
 import AddGarden from "./pages/AddGarden";
 import EditGarden from "./pages/EditGarden";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
+import HelpCenter from "./pages/HelpCenter";
 
 function App() {
   const { user } = useAuth();
@@ -136,6 +139,30 @@ function App() {
         element={
           <Layout>
             <Error403 />
+          </Layout>
+        }
+      />
+      <Route
+        path="/terms"
+        element={
+          <Layout>
+            <Terms />
+          </Layout>
+        }
+      />
+      <Route
+        path="/privacy"
+        element={
+          <Layout>
+            <Privacy />
+          </Layout>
+        }
+      />
+      <Route
+        path="/help"
+        element={
+          <Layout>
+            <HelpCenter />
           </Layout>
         }
       />

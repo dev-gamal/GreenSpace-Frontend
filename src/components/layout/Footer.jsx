@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import logo from '../../assets/logo.jpg';
 
 export default function Footer() {
@@ -11,9 +12,9 @@ export default function Footer() {
           <span className="text-xs">Nurturing communities, one garden at a time.</span>
         </div>
         <div className="flex gap-6 font-medium">
-          <a href="#" className="hover:text-gray-900">Terms</a>
-          <a href="#" className="hover:text-gray-900">Privacy</a>
-          <a href="#" className="hover:text-gray-900">Help Center</a>
+          <Link to="/terms" className="hover:text-gray-900">Terms</Link>
+          <Link to="/privacy" className="hover:text-gray-900">Privacy</Link>
+          <Link to="/help" className="hover:text-gray-900">Help Center</Link>
         </div>
         <div className="text-xs">© 2026 GreenSpace. Organic Stewardship.</div>
       </div>
