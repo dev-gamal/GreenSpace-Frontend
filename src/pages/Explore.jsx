@@ -119,9 +119,7 @@ export default function Explore() {
                       ? "Ready to Plant"
                       : "Occupied"}
                   </div>
-                  <button className="absolute flex items-center justify-center w-10 h-10 text-gray-500 transition-colors bg-white rounded-full top-4 right-4 shadow-md hover:text-red-500">
-                    <Heart size={18} />
-                  </button>
+
                 </div>
 
                 <CardContent className="p-6">
@@ -137,16 +135,13 @@ export default function Explore() {
                   </div>
 
                   <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-100">
-                    {garden.hasWaterAccess && (
+                    {garden.hasTools && (
                       <span className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-red-700 bg-red-50 rounded-md">
-                        <Droplets size={14} /> Water Acc.
+                        <Droplets size={14} /> Tools Included
                       </span>
                     )}
-                    <span className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-amber-700 bg-amber-50 rounded-md">
-                      <Sprout size={14} /> Full Sun
-                    </span>
                     <span className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-gray-600 bg-gray-100 rounded-md">
-                      <Maximize2 size={14} /> {garden.area} sq ft
+                      <Maximize2 size={14} /> {garden.areaSize} sq ft
                     </span>
                   </div>
                 </CardContent>

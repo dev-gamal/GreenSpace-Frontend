@@ -158,15 +158,15 @@ export default function Home() {
             <div className="flex items-center gap-2 mb-3">
               <div className="w-6 h-px bg-green-700"></div>
               <span className="text-xs font-bold tracking-widest text-green-700 uppercase">
-                {isOwner ? "Vos terrains" : "New opportunities"}
+                {isOwner ? "Your lands" : "New opportunities"}
               </span>
             </div>
             <h2 className="text-3xl font-bold text-gray-900 md:text-4xl mb-3">
-              {isOwner ? "Mes espaces partagés" : "Available Land Plots"}
+              {isOwner ? "My shared spaces" : "Available Land Plots"}
             </h2>
             <p className="text-gray-500 text-lg">
               {isOwner
-                ? "Gérez les espaces que vous avez mis à disposition."
+                ? "Manage your shared gardens and connect with local gardeners eager to cultivate your land."
                 : "Discover unused urban spaces ready for transformation. Connect with owners offering fertile ground for your next project."}
             </p>
           </div>
@@ -211,7 +211,7 @@ export default function Home() {
                           ? garden.photoUrls[0]
                           : "https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&q=80&w=800"
                       }
-                      alt="Jardin"
+                      alt="Garden"
                       className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
                     />
                     <div className="absolute px-3 py-1.5 text-xs font-bold text-white bg-green-800 rounded-lg top-4 left-4 shadow-sm">
@@ -219,9 +219,7 @@ export default function Home() {
                         ? "Ready to Plant"
                         : "Occupied"}
                     </div>
-                    <button className="absolute flex items-center justify-center w-10 h-10 text-gray-500 transition-colors bg-white rounded-full top-4 right-4 shadow-md hover:text-red-500">
-                      <Heart size={18} />
-                    </button>
+
                   </div>
 
                   <CardContent className="p-6">
@@ -229,14 +227,6 @@ export default function Home() {
                       <h3 className="text-xl font-bold leading-tight text-gray-900 truncate">
                         Garden in {garden.city}
                       </h3>
-                      <div className="text-right shrink-0">
-                        <span className="text-lg font-bold text-green-700">
-                          $45
-                        </span>
-                        <span className="text-xs text-gray-500 font-medium">
-                          /mo
-                        </span>
-                      </div>
                     </div>
 
                     <div className="flex items-center mb-6 text-sm text-gray-500 font-medium">
@@ -245,16 +235,13 @@ export default function Home() {
                     </div>
 
                     <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-100">
-                      {garden.hasWaterAccess && (
+                      {garden.hasTools && (
                         <span className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-red-700 bg-red-50 rounded-md">
-                          <Droplets size={14} /> Water Acc.
+                          <Droplets size={14} /> Tools Included
                         </span>
                       )}
-                      <span className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-amber-700 bg-amber-50 rounded-md">
-                        <Sprout size={14} /> Full Sun
-                      </span>
                       <span className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-gray-600 bg-gray-100 rounded-md">
-                        <Maximize2 size={14} /> {garden.area} sq ft
+                        <Maximize2 size={14} /> {garden.areaSize} sq ft
                       </span>
                     </div>
                   </CardContent>

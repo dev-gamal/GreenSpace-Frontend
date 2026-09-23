@@ -14,7 +14,7 @@ import {
   Trash2,
   MapPin,
   Maximize2,
-  Plus
+  Plus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "../context/AuthContext";
@@ -29,29 +29,31 @@ export default function Dashboard() {
   const isOwner = user?.role === "OWNER";
 
   const handleDeleteGarden = async (gardenId) => {
-    if (!window.confirm('Are you sure you want to delete this garden?')) return;
+    if (!window.confirm("Are you sure you want to delete this garden?")) return;
     try {
       await api.delete(`/garden/${gardenId}`);
-      setData(prev => ({
+      setData((prev) => ({
         ...prev,
-        gardens: prev.gardens.filter(g => g.id !== gardenId)
+        gardens: prev.gardens.filter((g) => g.id !== gardenId),
       }));
     } catch (error) {
-      console.error('Error deleting garden:', error);
-      alert(error.response?.data?.message || 'Failed to delete garden.');
+      console.error("Error deleting garden:", error);
+      alert(error.response?.data?.message || "Failed to delete garden.");
     }
   };
 
   const handleStatusChange = async (gardenId, newStatus) => {
     try {
       await api.put(`/garden/${gardenId}/status?status=${newStatus}`);
-      setData(prev => ({
+      setData((prev) => ({
         ...prev,
-        gardens: prev.gardens.map(g => g.id === gardenId ? { ...g, status: newStatus } : g)
+        gardens: prev.gardens.map((g) =>
+          g.id === gardenId ? { ...g, status: newStatus } : g,
+        ),
       }));
     } catch (error) {
-      console.error('Error updating garden status:', error);
-      alert(error.response?.data?.message || 'Failed to update status.');
+      console.error("Error updating garden status:", error);
+      alert(error.response?.data?.message || "Failed to update status.");
     }
   };
 
@@ -60,17 +62,19 @@ export default function Dashboard() {
       try {
         if (isOwner) {
           const gardensRes = await api.get(`/garden/owner/${user.id}`);
-          const requestsRes = await api.get(`/reservations/owner/${user.id}/requests`);
-          setData({ 
-            gardens: gardensRes.data.content || [], 
-            reservations: requestsRes.data.content || [] 
+          const requestsRes = await api.get(
+            `/reservations/owner/${user.id}/requests`,
+          );
+          setData({
+            gardens: gardensRes.data.content || [],
+            reservations: requestsRes.data.content || [],
           });
         } else {
           const gardensRes = await api.get(`/garden/search?city=&minArea=0`);
           const myRes = await api.get(`/reservations/gardener/${user.id}`);
-          setData({ 
-            gardens: gardensRes.data.content || [], 
-            reservations: myRes.data.content || [] 
+          setData({
+            gardens: gardensRes.data.content || [],
+            reservations: myRes.data.content || [],
           });
         }
       } catch (error) {
@@ -84,7 +88,9 @@ export default function Dashboard() {
   }, [user, isOwner]);
 
   const activeListings = isOwner ? data.gardens.length : 0;
-  const pendingRequests = data.reservations.filter((r) => r.status === "PENDING").length;
+  const pendingRequests = data.reservations.filter(
+    (r) => r.status === "PENDING",
+  ).length;
 
   const stats = [
     {
@@ -94,13 +100,13 @@ export default function Dashboard() {
       bg: "bg-gradient-to-br from-green-50 to-green-100/50",
     },
     {
-      title: "Messages Non Lus",
+      title: "Unread Messages",
       value: "0",
       icon: <Mail size={20} className="text-orange-700" />,
       bg: "bg-gradient-to-br from-orange-50 to-orange-100/50",
     },
     {
-      title: isOwner ? "Demandes en attente" : "Mes Réservations",
+      title: isOwner ? "Waiting demands" : "Mes Réservations",
       value: isOwner ? pendingRequests : data.reservations.length,
       icon: <ClipboardList size={20} className="text-yellow-700" />,
       bg: "bg-gradient-to-br from-yellow-50 to-yellow-100/50",
@@ -122,9 +128,7 @@ export default function Dashboard() {
               Hello, {user.firstName}!
             </h1>
             <p className="text-sm md:text-base text-gray-500">
-              <span className="md:hidden">
-                Ready to cultivate your garden?
-              </span>
+              <span className="md:hidden">Ready to cultivate your garden?</span>
               <span className="hidden md:inline">
                 Here's what's happening today.
               </span>
@@ -165,7 +169,10 @@ export default function Dashboard() {
         <div>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold text-gray-900">My Gardens</h2>
-            <Link to="/garden/add" className="text-sm font-semibold text-green-700 flex items-center gap-1 hover:underline">
+            <Link
+              to="/garden/add"
+              className="text-sm font-semibold text-green-700 flex items-center gap-1 hover:underline"
+            >
               <Plus size={16} /> Add Garden
             </Link>
           </div>
@@ -175,41 +182,66 @@ export default function Dashboard() {
             </div>
           ) : data.gardens.length === 0 ? (
             <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm text-center">
-              <p className="text-gray-500 mb-4">You haven't added any gardens yet.</p>
+              <p className="text-gray-500 mb-4">
+                You haven't added any gardens yet.
+              </p>
               <Link to="/garden/add">
-                <Button className="bg-green-700 hover:bg-green-800 rounded-full">Add Your First Garden</Button>
+                <Button className="bg-green-700 hover:bg-green-800 rounded-full">
+                  Add Your First Garden
+                </Button>
               </Link>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {data.gardens.map((garden) => (
-                <div key={garden.id} className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden group">
+                <div
+                  key={garden.id}
+                  className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden group"
+                >
                   <Link to={`/garden/${garden.id}`}>
                     <div className="relative h-36 overflow-hidden bg-gray-200">
                       <img
-                        src={garden.photoUrls?.length > 0 ? garden.photoUrls[0] : 'https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&q=80&w=800'}
+                        src={
+                          garden.photoUrls?.length > 0
+                            ? garden.photoUrls[0]
+                            : "https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&q=80&w=800"
+                        }
                         alt={garden.title}
                         className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
                       />
-                      <div className={`absolute top-3 left-3 px-2.5 py-1 text-[10px] font-bold uppercase rounded-lg text-white ${
-                        garden.status === 'AVAILABLE' ? 'bg-green-700' : garden.status === 'RESERVED' ? 'bg-orange-500' : 'bg-gray-500'
-                      }`}>
+                      <div
+                        className={`absolute top-3 left-3 px-2.5 py-1 text-[10px] font-bold uppercase rounded-lg text-white ${
+                          garden.status === "AVAILABLE"
+                            ? "bg-green-700"
+                            : garden.status === "RESERVED"
+                              ? "bg-orange-500"
+                              : "bg-gray-500"
+                        }`}
+                      >
                         {garden.status}
                       </div>
                     </div>
                   </Link>
                   <div className="p-4">
                     <Link to={`/garden/${garden.id}`}>
-                      <h3 className="font-bold text-gray-900 text-sm truncate mb-1">{garden.title}</h3>
+                      <h3 className="font-bold text-gray-900 text-sm truncate mb-1">
+                        {garden.title}
+                      </h3>
                     </Link>
                     <div className="flex items-center gap-3 text-xs text-gray-500 mb-3">
-                      <span className="flex items-center gap-1"><MapPin size={12} /> {garden.city}</span>
-                      <span className="flex items-center gap-1"><Maximize2 size={12} /> {garden.areaSize} m²</span>
+                      <span className="flex items-center gap-1">
+                        <MapPin size={12} /> {garden.city}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Maximize2 size={12} /> {garden.areaSize} m²
+                      </span>
                     </div>
                     <div className="mb-3">
                       <select
                         value={garden.status}
-                        onChange={(e) => handleStatusChange(garden.id, e.target.value)}
+                        onChange={(e) =>
+                          handleStatusChange(garden.id, e.target.value)
+                        }
                         className="w-full text-xs font-semibold p-1.5 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-green-500 text-gray-700 bg-gray-50 hover:bg-gray-100 transition-colors"
                       >
                         <option value="AVAILABLE">AVAILABLE</option>
@@ -240,7 +272,6 @@ export default function Dashboard() {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-
         <div className="lg:col-span-8">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold text-gray-900">Recent Activity</h2>
@@ -260,7 +291,10 @@ export default function Dashboard() {
               </div>
             ) : (
               data.reservations.slice(0, 4).map((res) => (
-                <div key={res.id} className="bg-white p-4 rounded-3xl border border-gray-100 flex items-center justify-between gap-4 shadow-sm">
+                <div
+                  key={res.id}
+                  className="bg-white p-4 rounded-3xl border border-gray-100 flex items-center justify-between gap-4 shadow-sm"
+                >
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 border">
                       <ClipboardList size={20} />
@@ -276,10 +310,12 @@ export default function Dashboard() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className={`px-3 py-1 text-xs font-semibold rounded-full flex items-center gap-1 ${res.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}`}>
-                      {res.status === 'PENDING' ? 'Pending' : 'Approved'}
+                    <span
+                      className={`px-3 py-1 text-xs font-semibold rounded-full flex items-center gap-1 ${res.status === "PENDING" ? "bg-yellow-100 text-yellow-800" : "bg-green-100 text-green-800"}`}
+                    >
+                      {res.status === "PENDING" ? "Pending" : "Approved"}
                     </span>
-                    {isOwner && res.status === 'PENDING' && (
+                    {isOwner && res.status === "PENDING" && (
                       <div className="hidden md:flex gap-1">
                         <button className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:text-red-600">
                           <X size={16} />
@@ -309,9 +345,7 @@ export default function Dashboard() {
                   <Sprout size={20} />
                 </div>
               </div>
-              <span className="text-xs font-medium text-gray-700">
-                Gardens
-              </span>
+              <span className="text-xs font-medium text-gray-700">Gardens</span>
             </div>
             <div className="flex flex-col items-center gap-2">
               <div className="w-16 h-16 rounded-full border border-gray-100 bg-white flex items-center justify-center shadow-sm">
@@ -351,32 +385,32 @@ export default function Dashboard() {
                   <h3 className="text-white font-bold text-lg leading-tight">
                     Add a Garden
                   </h3>
-                  <p className="text-white/80 text-xs">
-                    Share your space.
-                  </p>
+                  <p className="text-white/80 text-xs">Share your space.</p>
                 </div>
               </div>
             </Link>
 
-            <div className="relative h-32 rounded-3xl overflow-hidden group cursor-pointer">
-              <img
-                src="https://images.unsplash.com/photo-1488459716781-31db52582fe9?auto=format&fit=crop&w=600"
-                alt="Market"
-                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-black/40"></div>
-              <div className="absolute inset-0 p-5 flex flex-col justify-end">
-                <div className="w-8 h-8 rounded-full border border-white/40 flex items-center justify-center text-white mb-2 backdrop-blur-sm">
-                  <ShoppingBag size={14} />
+            <Link to="/market">
+              <div className="relative h-32 rounded-3xl overflow-hidden group cursor-pointer">
+                <img
+                  src="https://images.unsplash.com/photo-1488459716781-31db52582fe9?auto=format&fit=crop&w=600"
+                  alt="Market"
+                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-black/40"></div>
+                <div className="absolute inset-0 p-5 flex flex-col justify-end">
+                  <div className="w-8 h-8 rounded-full border border-white/40 flex items-center justify-center text-white mb-2 backdrop-blur-sm">
+                    <ShoppingBag size={14} />
+                  </div>
+                  <h3 className="text-white font-bold text-lg leading-tight">
+                    Market
+                  </h3>
+                  <p className="text-white/80 text-xs">
+                    Tools, seeds and harvest.
+                  </p>
                 </div>
-                <h3 className="text-white font-bold text-lg leading-tight">
-                  Market
-                </h3>
-                <p className="text-white/80 text-xs">
-                  Tools, seeds and harvest.
-                </p>
               </div>
-            </div>
+            </Link>
           </div>
         </div>
       </div>
