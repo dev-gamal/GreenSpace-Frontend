@@ -55,7 +55,7 @@ function App() {
       />
 
       <Route
-        path="/dashboard"
+        path="/admin-dashboard"
         element={
           <ProtectedRoute>
             {user?.role === "ADMIN" ? (
@@ -63,10 +63,18 @@ function App() {
                 <AdminDashboard />
               </Layout>
             ) : (
-              <Layout>
-                <Dashboard />
-              </Layout>
+              <Navigate to="/403" replace />
             )}
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <Dashboard />
+            </Layout>
           </ProtectedRoute>
         }
       />

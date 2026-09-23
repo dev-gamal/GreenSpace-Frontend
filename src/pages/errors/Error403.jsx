@@ -11,8 +11,10 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useAuth } from "../../context/AuthContext";
 
 export default function Error403() {
+  const { user } = useAuth();
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] px-4 py-12 text-center">
       <div className="inline-block px-4 py-1 mb-8 text-sm font-semibold text-red-800 bg-red-100 rounded-full">
@@ -111,7 +113,7 @@ export default function Error403() {
               certified account managing this land.
             </p>
             <Link
-              to="/dashboard"
+              to={user?.role === 'ADMIN' ? '/admin-dashboard' : '/dashboard'}
               className="text-sm font-bold text-gray-600 hover:text-gray-900 flex items-center gap-1"
             >
               Verify my permissions <Lock size={14} />

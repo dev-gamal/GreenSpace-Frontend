@@ -46,7 +46,7 @@ export default function Navbar() {
           <div className="flex items-center gap-2">
             {user ? (
               <>
-                <Link to="/dashboard" className="flex items-center gap-3 p-1 pr-3 transition-colors rounded-full hover:bg-gray-50">
+                <Link to={user.role === 'ADMIN' ? '/admin-dashboard' : '/dashboard'} className="flex items-center gap-3 p-1 pr-3 transition-colors rounded-full hover:bg-gray-50">
                   <span className="text-sm font-medium text-gray-700 md:text-gray-900">
                     <span className="md:hidden">Profil</span>
                     <span className="hidden md:inline">{user.firstName} {user.lastName}</span>

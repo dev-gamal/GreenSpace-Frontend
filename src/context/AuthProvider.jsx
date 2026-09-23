@@ -1,5 +1,5 @@
 import { useState } from "react";
-import api from "../api/axiosConfig";
+import { loginUser, registerUser } from "../api/authService";
 import { AuthContext } from "./AuthContext";
 
 export default function AuthProvider({ children }) {
@@ -14,8 +14,8 @@ export default function AuthProvider({ children }) {
   });
 
   const login = async (data) => {
-    const response = await api.post("/auth/login", data);
-    const { accessToken, user: userData } = response.data;
+    const responseData = await loginUser(data);
+    const { accessToken, user: userData } = responseData;
 
     localStorage.setItem("token", accessToken);
     localStorage.setItem("user", JSON.stringify(userData));
@@ -23,7 +23,7 @@ export default function AuthProvider({ children }) {
   };
 
   const register = async (data) => {
-    await api.post("/auth/register", data);
+    await registerUser(data);
     return login({ email: data.email, password: data.password });
   };
 

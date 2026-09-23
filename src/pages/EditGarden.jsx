@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import api from '../api/axiosConfig';
+import { getGardenById, updateGarden } from '../api/gardenService';
 import MapComponent from '../components/MapComponent';
 import { Leaf, MapPin, Ruler, Camera, CheckSquare, AlignLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -35,8 +35,7 @@ export default function EditGarden() {
   useEffect(() => {
     const fetchGarden = async () => {
       try {
-        const response = await api.get(`/garden/${id}`);
-        const garden = response.data;
+        const garden = await getGardenById(id);
         setOwnerId(garden.ownerId);
         
         setFormData({
@@ -95,7 +94,7 @@ export default function EditGarden() {
         .map((url) => url.trim())
         .filter((url) => url.length > 0);
 
-      await api.put(`/garden/${id}`, {
+      await updateGarden(id, {
         title: formData.title,
         description: formData.description,
         areaSize: parseFloat(formData.areaSize),

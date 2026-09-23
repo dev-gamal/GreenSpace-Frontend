@@ -2,7 +2,16 @@ import { useEffect, useState } from 'react';
 import { Users, Sprout, ShoppingBag, CalendarCheck, ShieldAlert, CheckCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import api from '../../api/axiosConfig';
+import {
+  getAdminStats,
+  getAdminUsers,
+  getAdminGardens,
+  getAdminProducts,
+  toggleUserBlock,
+  searchAdminUsers,
+  getAdminUserById,
+  updateAdminGardenStatus
+} from '../../api/adminService';
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState(null);
@@ -17,15 +26,15 @@ export default function AdminDashboard() {
     const fetchData = async () => {
       try {
         const [statsRes, usersRes, gardensRes, productsRes] = await Promise.all([
-          api.get('/admin/stats'),
-          api.get('/admin/users'),
-          api.get('/admin/gardens?size=100'),
-          api.get('/admin/products?size=100'),
+          getAdminStats(),
+          getAdminUsers(),
+          getAdminGardens(100),
+          getAdminProducts(100),
         ]);
-        setStats(statsRes.data);
-        setUsers(usersRes.data);
-        setGardens(gardensRes.data?.content || []);
-        setProducts(productsRes.data?.content || []);
+        setStats(statsRes);
+        setUsers(usersRes);
+        setGardens(gardensRes?.content || []);
+        setProducts(productsRes?.content || []);
       } catch (error) {
         console.error("Error loading admin data", error);
       } finally {
@@ -35,9 +44,9 @@ export default function AdminDashboard() {
     fetchData();
   }, []);
 
-  const toggleUserBlock = async (userId) => {
+  const handleToggleUserBlock = async (userId) => {
     try {
-      await api.put(`/admin/users/${userId}/toggle-block`);
+      await toggleUserBlock(userId);
       setUsers(users.map(u => u.id === userId ? { ...u, isBlocked: !u.isBlocked } : u));
     } catch (error) {
       console.error("Error updating user.", error);
@@ -48,16 +57,16 @@ export default function AdminDashboard() {
   const handleSearchUsers = async () => {
     if (!userSearchQuery.trim()) {
       try {
-        const usersRes = await api.get('/admin/users');
-        setUsers(usersRes.data);
+        const usersRes = await getAdminUsers();
+        setUsers(usersRes);
       } catch (error) {
         console.error("Error loading users", error);
       }
       return;
     }
     try {
-      const res = await api.get(`/admin/users/search?query=${encodeURIComponent(userSearchQuery)}`);
-      setUsers(res.data);
+      const res = await searchAdminUsers(userSearchQuery);
+      setUsers(res);
     } catch (error) {
       console.error("Error searching users", error);
     }
@@ -65,9 +74,9 @@ export default function AdminDashboard() {
 
   const handleViewUser = async (userId) => {
     try {
-      const res = await api.get(`/admin/users/${userId}`);
-      setSelectedUser(res.data);
-      alert(`User Details:\nName: ${res.data.firstName} ${res.data.lastName}\nEmail: ${res.data.email}\nRole: ${res.data.role}\nJoined: ${res.data.createdAt}`);
+      const res = await getAdminUserById(userId);
+      setSelectedUser(res);
+      alert(`User Details:\nName: ${res.firstName} ${res.lastName}\nEmail: ${res.email}\nRole: ${res.role}\nJoined: ${res.createdAt}`);
     } catch (error) {
       console.error("Error fetching user details", error);
     }
@@ -75,7 +84,7 @@ export default function AdminDashboard() {
 
   const handleUpdateGardenStatus = async (gardenId, newStatus) => {
     try {
-      await api.put(`/admin/gardens/${gardenId}/status?status=${newStatus}`);
+      await updateAdminGardenStatus(gardenId, newStatus);
       setGardens(gardens.map(g => g.id === gardenId ? { ...g, status: newStatus } : g));
     } catch (error) {
       console.error("Error updating garden status", error);
@@ -196,7 +205,7 @@ export default function AdminDashboard() {
                       </button>
                       {user.role !== 'ADMIN' && (
                         <button 
-                          onClick={() => toggleUserBlock(user.id)}
+                          onClick={() => handleToggleUserBlock(user.id)}
                           className={`px-3 py-1 text-sm text-white rounded transition-colors ${user.isBlocked ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`}
                         >
                           {user.isBlocked ? 'Unblock' : 'Block'}

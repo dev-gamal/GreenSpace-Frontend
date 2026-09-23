@@ -2,7 +2,8 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client/dist/sockjs";
-import api from "@/api/axiosConfig";
+import { getChatHistory, getUnreadCount, markMessagesAsRead, getConversations } from "../api/chatService";
+import { searchUsers } from "../api/userService";
 import { useAuth } from "@/context/AuthContext";
 import {
   Search,
@@ -150,10 +151,8 @@ function NewConversationModal({
     debounceRef.current = setTimeout(async () => {
       setSearching(true);
       try {
-        const res = await api.get(
-          `/users/search?query=${encodeURIComponent(searchQuery.trim())}`,
-        );
-        setResults(res.data.filter((u) => u.id !== currentUserId));
+        const data = await searchUsers(searchQuery.trim());
+        setResults(data.filter((u) => u.id !== currentUserId));
       } catch (err) {
         console.error("User search failed:", err);
         setResults([]);
@@ -288,9 +287,9 @@ export default function Messages() {
   const loadConversations = useCallback(async () => {
     if (!user?.id) return;
     try {
-      const res = await api.get(`/chat/conversations?userId=${user.id}`);
+      const data = await getConversations(user.id);
         setConversations((prev) => {
-          const fetched = res.data;
+          const fetched = data;
           const temps = prev.filter((c) => c.lastMessage === "");
           const merged = [...fetched];
           temps.forEach((tc) => {
@@ -351,10 +350,10 @@ export default function Messages() {
     const fetchConversations = async () => {
       if (!user?.id) return;
       try {
-        const res = await api.get(`/chat/conversations?userId=${user.id}`);
+        const data = await getConversations(user.id);
         if (!ignore) {
           setConversations((prev) => {
-            const fetched = res.data;
+            const fetched = data;
             const temps = prev.filter((c) => c.lastMessage === "");
             const merged = [...fetched];
             temps.forEach((tc) => {
@@ -461,16 +460,10 @@ export default function Messages() {
     const loadMessages = async () => {
       setMessagesLoading(true);
       try {
-        const res = await api.get(
-          `/chat/history?user1Id=${user.id}&user2Id=${activeConversation}`,
-        );
-        setMessages(res.data);
+        const data = await getChatHistory(user.id, activeConversation);
+        setMessages(data);
 
-        await api
-          .put(
-            `/chat/mark-read?senderId=${activeConversation}&recipientId=${user.id}`,
-          )
-          .catch(() => {});
+        await markMessagesAsRead(activeConversation, user.id).catch(() => {});
 
         loadConversations();
       } catch (err) {

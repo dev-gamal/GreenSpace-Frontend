@@ -1,13 +1,16 @@
 import { Link, useLocation } from 'react-router-dom';
 import { Home, Compass, MessageCircle, User } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 export default function BottomNav() {
   const location = useLocation();
+  const { user } = useAuth();
+  
   const navItems = [
     { name: 'Home', icon: <Home size={22} />, path: '/' },
     { name: 'Explore', icon: <Compass size={22} />, path: '/explore' },
     { name: 'Messages', icon: <MessageCircle size={22} />, path: '/messages' },
-    { name: 'Dashboard', icon: <User size={22} />, path: '/dashboard' },
+    { name: 'Dashboard', icon: <User size={22} />, path: user?.role === 'ADMIN' ? '/admin-dashboard' : '/dashboard' },
   ];
 
   return (

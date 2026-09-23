@@ -7,7 +7,8 @@ import {
 import MapComponent from '../components/MapComponent';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import api from '../api/axiosConfig';
+import { deleteGarden, updateGardenStatus, getGardenById } from '../api/gardenService';
+import { createReservation } from '../api/reservationService';
 
 export default function LandDetails() {
   const { id } = useParams();
@@ -26,8 +27,8 @@ export default function LandDetails() {
     if (!window.confirm('Are you sure you want to delete this garden? This action cannot be undone.')) return;
     setDeleting(true);
     try {
-      await api.delete(`/garden/${id}`);
-      navigate('/dashboard');
+      await deleteGarden(id);
+      navigate(user?.role === 'ADMIN' ? '/admin-dashboard' : '/dashboard');
     } catch (error) {
       console.error('Error deleting garden:', error);
       alert(error.response?.data?.message || 'Failed to delete garden.');
@@ -38,7 +39,7 @@ export default function LandDetails() {
   const handleStatusChange = async (e) => {
     const newStatus = e.target.value;
     try {
-      await api.put(`/garden/${id}/status?status=${newStatus}`);
+      await updateGardenStatus(id, newStatus);
       setGarden(prev => ({ ...prev, status: newStatus }));
     } catch (error) {
       console.error('Error updating garden status:', error);
@@ -52,7 +53,7 @@ export default function LandDetails() {
     if (!user || user.role !== 'GARDENER') return;
     setReserving(true);
     try {
-      await api.post(`/reservations?gardenerId=${user.id}`, {
+      await createReservation(user.id, {
         gardenId: parseInt(id),
         startDate: reserveForm.startDate,
         endDate: reserveForm.endDate,
@@ -72,8 +73,8 @@ export default function LandDetails() {
   useEffect(() => {
     const fetchGardenDetails = async () => {
       try {
-        const response = await api.get(`/garden/${id || 1}`); 
-        setGarden(response.data);
+        const data = await getGardenById(id || 1); 
+        setGarden(data);
       } catch (error) {
         console.error("Error fetching garden details:", error);
         setGarden({});

@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "../context/AuthContext";
-import api from "../api/axiosConfig";
+import { getGardensByOwner, searchGardens } from "../api/gardenService";
 import heroBg from "../assets/hero-bg.jpg";
 
 export default function Home() {
@@ -26,11 +26,11 @@ export default function Home() {
     const fetchGardens = async () => {
       try {
         if (isOwner) {
-          const response = await api.get(`/garden/owner/${user.id}`);
-          setGardens(response.data.content || []);
+          const response = await getGardensByOwner(user.id);
+          setGardens(response.content || []);
         } else {
-          const response = await api.get(`/garden/search?city=&minArea=0`);
-          setGardens(response.data.content || []);
+          const response = await searchGardens("", 0);
+          setGardens(response.content || []);
         }
       } catch (error) {
         console.error("Error while fetching gardens", error);

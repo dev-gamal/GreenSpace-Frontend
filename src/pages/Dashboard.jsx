@@ -21,6 +21,8 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "../context/AuthContext";
 import api from "../api/axiosConfig";
 import { getProductsByPublisher, deleteProduct, updateProductStatus } from "../api/productService";
+import { deleteGarden, updateGardenStatus, searchGardens, getGardensByOwner } from "../api/gardenService";
+import { updateReservationStatus, getReservationsByGardener, getReservationRequestsForOwner } from "../api/reservationService";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -33,7 +35,7 @@ export default function Dashboard() {
   const handleDeleteGarden = async (gardenId) => {
     if (!window.confirm("Are you sure you want to delete this garden?")) return;
     try {
-      await api.delete(`/garden/${gardenId}`);
+      await deleteGarden(gardenId);
       setData((prev) => ({
         ...prev,
         gardens: prev.gardens.filter((g) => g.id !== gardenId),
@@ -46,7 +48,7 @@ export default function Dashboard() {
 
   const handleStatusChange = async (gardenId, newStatus) => {
     try {
-      await api.put(`/garden/${gardenId}/status?status=${newStatus}`);
+      await updateGardenStatus(gardenId, newStatus);
       setData((prev) => ({
         ...prev,
         gardens: prev.gardens.map((g) =>
@@ -61,7 +63,7 @@ export default function Dashboard() {
 
   const handleReservationStatus = async (reservationId, status) => {
     try {
-      await api.put(`/reservations/${reservationId}/status?ownerId=${user.id}&status=${status}`);
+      await updateReservationStatus(reservationId, user.id, status);
       setData((prev) => ({
         ...prev,
         reservations: prev.reservations.map((r) =>
@@ -107,22 +109,20 @@ export default function Dashboard() {
     const fetchDashboardData = async () => {
       try {
         if (isOwner) {
-          const gardensRes = await api.get(`/garden/owner/${user.id}`);
-          const requestsRes = await api.get(
-            `/reservations/owner/${user.id}/requests`,
-          );
+          const gardensRes = await getGardensByOwner(user.id);
+          const requestsRes = await getReservationRequestsForOwner(user.id);
           setData({
-            gardens: gardensRes.data.content || [],
-            reservations: requestsRes.data.content || [],
+            gardens: gardensRes.content || [],
+            reservations: requestsRes.content || [],
             products: [],
           });
         } else {
-          const gardensRes = await api.get(`/garden/search?city=&minArea=0`);
-          const myRes = await api.get(`/reservations/gardener/${user.id}`);
+          const gardensRes = await searchGardens("", 0);
+          const myRes = await getReservationsByGardener(user.id);
           const productsRes = await getProductsByPublisher(user.id);
           setData({
-            gardens: gardensRes.data.content || [],
-            reservations: myRes.data.content || [],
+            gardens: gardensRes.content || [],
+            reservations: myRes.content || [],
             products: productsRes.content || [],
           });
         }

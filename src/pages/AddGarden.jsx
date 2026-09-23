@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import api from '../api/axiosConfig';
+import { createGarden } from '../api/gardenService';
 import MapComponent from '../components/MapComponent';
 import { Leaf, MapPin, Ruler, Camera, CheckSquare, AlignLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -57,10 +57,7 @@ export default function AddGarden() {
         .map((url) => url.trim())
         .filter((url) => url.length > 0);
 
-      const params = new URLSearchParams();
-      params.append('ownerId', user.id);
-
-      await api.post(`/garden?${params.toString()}`, {
+      await createGarden({
         title: formData.title,
         description: formData.description,
         areaSize: parseFloat(formData.areaSize),
@@ -72,9 +69,9 @@ export default function AddGarden() {
         latitude: parseFloat(formData.latitude) || null,
         longitude: parseFloat(formData.longitude) || null,
         photoUrls: photos
-      });
+      }, user.id);
 
-      navigate('/dashboard');
+      navigate(user?.role === 'ADMIN' ? '/admin-dashboard' : '/dashboard');
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.message || 'Failed to add garden. Please check your inputs.');

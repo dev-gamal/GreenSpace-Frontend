@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import api from "../api/axiosConfig";
+import { searchGardens } from "../api/gardenService";
 
 export default function Explore() {
   const [gardens, setGardens] = useState([]);
@@ -20,8 +20,8 @@ export default function Explore() {
   const fetchGardens = async (city = "") => {
     try {
       setLoading(true);
-      const response = await api.get(`/garden/search?city=${city}&minArea=0`);
-      setGardens(response.data.content || []);
+      const response = await searchGardens(city, 0);
+      setGardens(response.content || []);
     } catch (error) {
       console.error("Error fetching gardens", error);
     } finally {

@@ -1,11 +1,13 @@
 import { Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, List, Settings } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Sidebar() {
   const location = useLocation();
+  const { user } = useAuth();
 
   const menu = [
-    { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard' },
+    { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: user?.role === 'ADMIN' ? '/admin-dashboard' : '/dashboard' },
     { name: 'Explore', icon: <List size={20} />, path: '/explore' },
     { name: 'Home', icon: <Settings size={20} />, path: '/' },
   ];
