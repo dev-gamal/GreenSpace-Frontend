@@ -99,7 +99,7 @@ export default function LandDetails() {
     <div className="container max-w-6xl px-4 py-8 mx-auto md:px-8">
       
       <section className="mb-8">
-        <div className="relative w-full overflow-hidden h-64 md:h-[450px] rounded-3xl mb-4">
+        <div className="relative w-full overflow-hidden h-64 md:h-112.5 rounded-3xl mb-4">
           {images.length > 0 ? (
             <img 
               src={images[0]} 

@@ -14,7 +14,6 @@ import {
   Trash2,
   MapPin,
   Maximize2,
-  Plus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "../context/AuthContext";

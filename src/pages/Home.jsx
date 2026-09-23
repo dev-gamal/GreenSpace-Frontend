@@ -4,7 +4,6 @@ import {
   MapPin,
   Droplets,
   Maximize2,
-  Heart,
   Users,
   Leaf,
   PlusCircle,
@@ -45,14 +44,14 @@ export default function Home() {
 
   return (
     <div className="min-h-screen pb-20 bg-gray-50 md:pb-0">
-      <div className="relative w-full h-[600px] md:h-[650px] mb-24 md:mb-32">
+      <div className="relative w-full h-150 md:h-162.5 mb-24 md:mb-32">
         <div
           className="absolute inset-0 bg-center bg-cover"
           style={{
             backgroundImage: `url(${heroBg})`,
           }}
         >
-          <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-black/20 to-black/60" />
+          <div className="absolute inset-0 bg-linear-to-b from-white/60 via-black/20 to-black/60" />
         </div>
 
         <div className="relative z-10 flex flex-col justify-center h-full max-w-4xl px-4 mx-auto container md:px-8 pt-10">
