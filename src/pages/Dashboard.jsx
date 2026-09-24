@@ -23,11 +23,12 @@ import api from "../api/axiosConfig";
 import { getProductsByPublisher, deleteProduct, updateProductStatus } from "../api/productService";
 import { deleteGarden, updateGardenStatus, searchGardens, getGardensByOwner } from "../api/gardenService";
 import { updateReservationStatus, getReservationsByGardener, getReservationRequestsForOwner } from "../api/reservationService";
+import { getUnreadCount } from "../api/chatService";
 
 export default function Dashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [data, setData] = useState({ gardens: [], reservations: [], products: [] });
+  const [data, setData] = useState({ gardens: [], reservations: [], products: [], unreadCount: 0 });
   const [loading, setLoading] = useState(true);
 
   const isOwner = user?.role === "OWNER";
@@ -111,19 +112,23 @@ export default function Dashboard() {
         if (isOwner) {
           const gardensRes = await getGardensByOwner(user.id);
           const requestsRes = await getReservationRequestsForOwner(user.id);
+          const unreadRes = await getUnreadCount(user.id);
           setData({
             gardens: gardensRes.content || [],
             reservations: requestsRes.content || [],
             products: [],
+            unreadCount: unreadRes || 0,
           });
         } else {
           const gardensRes = await searchGardens("", 0);
           const myRes = await getReservationsByGardener(user.id);
           const productsRes = await getProductsByPublisher(user.id);
+          const unreadRes = await getUnreadCount(user.id);
           setData({
             gardens: gardensRes.content || [],
             reservations: myRes.content || [],
             products: productsRes.content || [],
+            unreadCount: unreadRes || 0,
           });
         }
       } catch (error) {
@@ -150,7 +155,7 @@ export default function Dashboard() {
     },
     {
       title: "Unread Messages",
-      value: "0",
+      value: data.unreadCount,
       icon: <Mail size={20} className="text-orange-700" />,
       bg: "bg-gradient-to-br from-orange-50 to-orange-100/50",
     },
