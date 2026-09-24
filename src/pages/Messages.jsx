@@ -97,33 +97,35 @@ export default function Messages() {
       urlParamsHandled.current = true;
       const userId = Number(targetUserId);
 
-      const existingConv = conversations.find((c) => c.userId === userId);
-      if (existingConv) {
-        setActiveConversation(userId);
-        setShowMobileChat(true);
-      } else {
-        const nameParts = (targetUserName || "").split(" ");
-        const tempConv = {
-          userId: userId,
-          firstName: nameParts[0] || "User",
-          lastName: nameParts.slice(1).join(" ") || "",
-          lastMessage: "",
-          lastMessageTime: null,
-          unreadCount: 0,
-        };
-        setConversations((prev) => {
-          if (prev.find((c) => c.userId === userId)) return prev;
-          return [tempConv, ...prev];
-        });
-        setActiveConversation(userId);
-        setShowMobileChat(true);
-      }
+      setTimeout(() => {
+        const existingConv = conversations.find((c) => c.userId === userId);
+        if (existingConv) {
+          setActiveConversation(userId);
+          setShowMobileChat(true);
+        } else {
+          const nameParts = (targetUserName || "").split(" ");
+          const tempConv = {
+            userId: userId,
+            firstName: nameParts[0] || "User",
+            lastName: nameParts.slice(1).join(" ") || "",
+            lastMessage: "",
+            lastMessageTime: null,
+            unreadCount: 0,
+          };
+          setConversations((prev) => {
+            if (prev.find((c) => c.userId === userId)) return prev;
+            return [tempConv, ...prev];
+          });
+          setActiveConversation(userId);
+          setShowMobileChat(true);
+        }
 
-      setSearchParams((params) => {
-        params.delete("userId");
-        params.delete("userName");
-        return params;
-      }, { replace: true });
+        setSearchParams((params) => {
+          params.delete("userId");
+          params.delete("userName");
+          return params;
+        }, { replace: true });
+      }, 0);
     }
   }, [searchParams, user, conversations, setSearchParams, setActiveConversation]);
 

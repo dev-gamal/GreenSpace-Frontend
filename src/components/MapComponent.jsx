@@ -42,9 +42,11 @@ const MapComponent = ({ address, city, lat, lng, onLocationSelect }) => {
 
   useEffect(() => {
     if (lat && lng) {
-      const exactLocation = [parseFloat(lat), parseFloat(lng)];
-      setCenter(exactLocation);
-      setMarkerPosition(exactLocation);
+      setTimeout(() => {
+        const exactLocation = [parseFloat(lat), parseFloat(lng)];
+        setCenter(exactLocation);
+        setMarkerPosition(exactLocation);
+      }, 0);
     } else if (address || city) {
       const searchQuery = `${address ? address + ', ' : ''}${city || ''}`;
       fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}`)
