@@ -19,17 +19,43 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "../context/AuthContext";
-import api from "../api/axiosConfig";
 import { getProductsByPublisher, deleteProduct, updateProductStatus } from "../api/productService";
+import { updateProfile } from "../api/userService";
 import { deleteGarden, updateGardenStatus, searchGardens, getGardensByOwner } from "../api/gardenService";
 import { updateReservationStatus, getReservationsByGardener, getReservationRequestsForOwner } from "../api/reservationService";
 import { getUnreadCount } from "../api/chatService";
 
 export default function Dashboard() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const navigate = useNavigate();
   const [data, setData] = useState({ gardens: [], reservations: [], products: [], unreadCount: 0 });
   const [loading, setLoading] = useState(true);
+  
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+  const [profileData, setProfileData] = useState({
+    firstName: user?.firstName || "",
+    lastName: user?.lastName || "",
+    phoneNumber: user?.phoneNumber || "",
+    city: user?.city || "",
+    postalCode: user?.postalCode || ""
+  });
+  const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
+
+  const handleUpdateProfile = async (e) => {
+    e.preventDefault();
+    setIsUpdatingProfile(true);
+    try {
+      const updatedUser = await updateProfile(profileData);
+      updateUser(updatedUser);
+      setIsEditProfileOpen(false);
+      alert("Profile updated successfully!");
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      alert(error.response?.data?.message || "Failed to update profile.");
+    } finally {
+      setIsUpdatingProfile(false);
+    }
+  };
 
   const isOwner = user?.role === "OWNER";
 
@@ -189,6 +215,12 @@ export default function Dashboard() {
             </p>
           </div>
         </div>
+        <Button 
+          onClick={() => setIsEditProfileOpen(true)}
+          className="bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 rounded-full flex items-center gap-2"
+        >
+          <Pencil size={16} /> Edit Profile
+        </Button>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -577,6 +609,97 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Edit Profile Modal */}
+      {isEditProfileOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-xl">
+            <div className="flex justify-between items-center p-6 border-b border-gray-100">
+              <h2 className="text-xl font-bold text-gray-900">Edit Profile</h2>
+              <button 
+                onClick={() => setIsEditProfileOpen(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            <form onSubmit={handleUpdateProfile} className="p-6 space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={profileData.firstName}
+                    onChange={(e) => setProfileData({...profileData, firstName: e.target.value})}
+                    className="w-full p-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={profileData.lastName}
+                    onChange={(e) => setProfileData({...profileData, lastName: e.target.value})}
+                    className="w-full p-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                <input
+                  type="tel"
+                  value={profileData.phoneNumber}
+                  onChange={(e) => setProfileData({...profileData, phoneNumber: e.target.value})}
+                  className="w-full p-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+                  <input
+                    type="text"
+                    value={profileData.city}
+                    onChange={(e) => setProfileData({...profileData, city: e.target.value})}
+                    className="w-full p-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Postal Code</label>
+                  <input
+                    type="text"
+                    value={profileData.postalCode}
+                    onChange={(e) => setProfileData({...profileData, postalCode: e.target.value})}
+                    className="w-full p-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-4 flex justify-end gap-3">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setIsEditProfileOpen(false)}
+                  className="rounded-full"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit" 
+                  disabled={isUpdatingProfile}
+                  className="bg-green-700 hover:bg-green-800 text-white rounded-full"
+                >
+                  {isUpdatingProfile ? "Saving..." : "Save Changes"}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
