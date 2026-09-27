@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import {
   Sprout,
-  Search,
   Home,
   Compass,
   Store,
@@ -95,19 +94,6 @@ export default function Error404() {
         existed in the first place. Let's get you back to familiar soil.
       </p>
 
-      <div className="w-full max-w-2xl mb-10">
-        <div className="relative flex items-center">
-          <Search className="absolute text-gray-400 left-4" size={20} />
-          <input
-            type="text"
-            placeholder="Search lands, seeds, produce, or community topics..."
-            className="w-full py-4 pl-12 pr-32 text-lg border border-gray-200 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-          />
-          <Button className="absolute right-2 top-2 bottom-2 rounded-full bg-green-800 hover:bg-green-900 text-white px-6 font-semibold">
-            Search →
-          </Button>
-        </div>
-      </div>
 
       <div className="flex flex-wrap justify-center gap-4 mb-16">
         <Button
