@@ -7,7 +7,6 @@ import { getChatHistory, markMessagesAsRead, getConversations } from "../api/cha
 import { useAuth } from "@/context/AuthContext";
 import {
   Search,
-  Edit,
   MoreVertical,
   Plus,
   Smile,
@@ -19,7 +18,6 @@ import {
 import { getInitials } from "../utils/chatUtils";
 import { ConversationItem } from "../components/chat/ConversationItem";
 import { MessageBubble } from "../components/chat/MessageBubble";
-import { NewConversationModal } from "../components/chat/NewConversationModal";
 
 export default function Messages() {
   const { user } = useAuth();
@@ -38,7 +36,6 @@ export default function Messages() {
   });
   const [loading, setLoading] = useState(true);
   const [messagesLoading, setMessagesLoading] = useState(false);
-  const [showNewConversation, setShowNewConversation] = useState(false);
   const messagesEndRef = useRef(null);
   const stompClientRef = useRef(null);
   const urlParamsHandled = useRef(false);
@@ -281,33 +278,6 @@ export default function Messages() {
     setShowMobileChat(true);
   };
 
-  const handleSelectNewUser = (selectedUser) => {
-    setShowNewConversation(false);
-
-    const existingConv = conversations.find(
-      (c) => c.userId === selectedUser.id,
-    );
-    if (existingConv) {
-      setActiveConversation(selectedUser.id);
-      setShowMobileChat(true);
-      return;
-    }
-
-    const tempConv = {
-      userId: selectedUser.id,
-      firstName: selectedUser.firstName,
-      lastName: selectedUser.lastName,
-      lastMessage: "",
-      lastMessageTime: null,
-      unreadCount: 0,
-    };
-    setConversations((prev) => {
-      if (prev.find((c) => c.userId === selectedUser.id)) return prev;
-      return [tempConv, ...prev];
-    });
-    setActiveConversation(selectedUser.id);
-    setShowMobileChat(true);
-  };
 
   const handleSend = () => {
     if (!messageInput.trim() || !activeConversation) return;
@@ -355,13 +325,6 @@ export default function Messages() {
       >
         <div className="flex items-center justify-between px-5 pt-5 pb-3">
           <h1 className="text-xl font-bold text-gray-900">Messages</h1>
-          <button
-            onClick={() => setShowNewConversation(true)}
-            className="p-2 text-gray-500 transition-colors rounded-lg hover:bg-gray-100 hover:text-green-700"
-            title="New conversation"
-          >
-            <Edit size={18} />
-          </button>
         </div>
 
         <div className="px-5 mb-3">
@@ -417,14 +380,6 @@ export default function Messages() {
                   ? "No conversations found"
                   : "No conversations yet"}
               </p>
-              {!searchQuery && (
-                <button
-                  onClick={() => setShowNewConversation(true)}
-                  className="mt-3 px-4 py-2 text-xs font-semibold text-white bg-green-700 rounded-full hover:bg-green-800 transition-colors"
-                >
-                  Start a conversation
-                </button>
-              )}
             </div>
           )}
         </div>
@@ -526,22 +481,10 @@ export default function Messages() {
             <p className="text-xs mt-1">
               Choose a conversation from the sidebar to start chatting
             </p>
-            <button
-              onClick={() => setShowNewConversation(true)}
-              className="mt-4 px-5 py-2.5 text-sm font-semibold text-white bg-green-700 rounded-full hover:bg-green-800 transition-colors"
-            >
-              New conversation
-            </button>
           </div>
         )}
       </section>
 
-      <NewConversationModal
-        isOpen={showNewConversation}
-        onClose={() => setShowNewConversation(false)}
-        onSelectUser={handleSelectNewUser}
-        currentUserId={user?.id}
-      />
     </div>
   );
 }

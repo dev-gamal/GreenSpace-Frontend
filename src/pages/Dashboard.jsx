@@ -490,7 +490,6 @@ export default function Dashboard() {
                       </h4>
                       <p className="text-xs md:text-sm text-gray-500">
                         Garden ID: {res.gardenId}{" "}
-                        <span className="hidden md:inline">• Recently</span>
                       </p>
                     </div>
                   </div>
@@ -610,7 +609,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Edit Profile Modal */}
       {isEditProfileOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-xl">

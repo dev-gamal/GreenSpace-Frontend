@@ -8,7 +8,6 @@ import {
   getAdminGardens,
   getAdminProducts,
   toggleUserBlock,
-  searchAdminUsers,
   getAdminUserById,
   updateAdminGardenStatus
 } from '../../api/adminService';
@@ -19,8 +18,6 @@ export default function AdminDashboard() {
   const [gardens, setGardens] = useState([]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [userSearchQuery, setUserSearchQuery] = useState('');
-  const [selectedUser, setSelectedUser] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -54,28 +51,10 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleSearchUsers = async () => {
-    if (!userSearchQuery.trim()) {
-      try {
-        const usersRes = await getAdminUsers();
-        setUsers(usersRes);
-      } catch (error) {
-        console.error("Error loading users", error);
-      }
-      return;
-    }
-    try {
-      const res = await searchAdminUsers(userSearchQuery);
-      setUsers(res);
-    } catch (error) {
-      console.error("Error searching users", error);
-    }
-  };
 
   const handleViewUser = async (userId) => {
     try {
       const res = await getAdminUserById(userId);
-      setSelectedUser(res);
       alert(`User Details:\nName: ${res.firstName} ${res.lastName}\nEmail: ${res.email}\nRole: ${res.role}\nJoined: ${res.createdAt}`);
     } catch (error) {
       console.error("Error fetching user details", error);
@@ -143,21 +122,6 @@ export default function AdminDashboard() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Users management</CardTitle>
-          <div className="flex gap-2">
-            <input 
-              type="text" 
-              placeholder="Search users..." 
-              value={userSearchQuery}
-              onChange={(e) => setUserSearchQuery(e.target.value)}
-              className="border px-2 py-1 rounded text-sm"
-            />
-            <button 
-              onClick={handleSearchUsers}
-              className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700"
-            >
-              Search
-            </button>
-          </div>
         </CardHeader>
         <CardContent>
           {users.length === 0 ? (

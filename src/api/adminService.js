@@ -25,10 +25,6 @@ export const toggleUserBlock = async (userId) => {
   return response.data;
 };
 
-export const searchAdminUsers = async (query) => {
-  const response = await api.get(`/admin/users/search?query=${encodeURIComponent(query)}`);
-  return response.data;
-};
 
 export const getAdminUserById = async (userId) => {
   const response = await api.get(`/admin/users/${userId}`);

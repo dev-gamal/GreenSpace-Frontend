@@ -17,12 +17,10 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-40 w-full bg-white border-b">
       <div className="flex items-center justify-between px-4 py-3 mx-auto md:px-8">
-        {/* Logo */}
         <Link to="/" className="flex items-center">
           <img src={logo} alt="GreenSpace Logo" className="h-12 w-auto object-contain mix-blend-multiply" />
         </Link>
 
-        {/* Liens Desktop */}
         <nav className="hidden gap-8 text-sm font-medium text-gray-500 md:flex">
           {navLinks.map((link) => {
             const isActive = 
@@ -40,7 +38,6 @@ export default function Navbar() {
           })}
         </nav>
 
-        {/* Actions & Profil */}
         <div className="flex items-center gap-4">
 
           <div className="flex items-center gap-2">

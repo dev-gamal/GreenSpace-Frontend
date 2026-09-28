@@ -4,7 +4,6 @@ import {
   MapPin,
   Droplets,
   Maximize2,
-  Heart,
   Sprout,
   Search,
 } from "lucide-react";

@@ -237,7 +237,6 @@ export default function Market() {
             />
           </div>
 
-          {/* Exchange type toggle */}
           <div className="flex gap-2 px-2">
             {EXCHANGE_TYPES.map((et) => (
               <button
