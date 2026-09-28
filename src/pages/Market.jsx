@@ -79,8 +79,6 @@ export default function Market() {
     product.publisherId === user?.id || user?.role === 'ADMIN';
 
   const fetchProducts = useCallback(async () => {
-    setLoading(true);
-    setError(null);
     try {
       const data = await getMarketProducts(exchangeType, '', page, 12);
       setProducts(data.content || []);
@@ -92,11 +90,20 @@ export default function Market() {
     } finally {
       setLoading(false);
     }
-  }, [exchangeType, page, refreshKey]);
+  }, [exchangeType, page]);
 
   useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
+    let active = true;
+    const load = async () => {
+      await Promise.resolve();
+      if (!active) return;
+      setLoading(true);
+      setError(null);
+      await fetchProducts();
+    };
+    load();
+    return () => { active = false; };
+  }, [fetchProducts, refreshKey]);
 
 
   const filteredProducts = products.filter((p) => {

@@ -235,6 +235,7 @@ export default function Messages() {
     if (!activeConversation || !user?.id) return;
 
     const loadMessages = async () => {
+      await Promise.resolve();
       setMessagesLoading(true);
       try {
         const data = await getChatHistory(user.id, activeConversation);

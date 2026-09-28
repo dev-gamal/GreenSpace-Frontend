@@ -29,7 +29,19 @@ export default function Explore() {
   };
 
   useEffect(() => {
-    fetchGardens();
+    let ignore = false;
+    const loadGardens = async () => {
+      try {
+        const response = await searchGardens("", 0);
+        if (!ignore) setGardens(response.content || []);
+      } catch (error) {
+        console.error("Error fetching gardens", error);
+      } finally {
+        if (!ignore) setLoading(false);
+      }
+    };
+    loadGardens();
+    return () => { ignore = true; };
   }, []);
 
   const handleSearch = (e) => {
