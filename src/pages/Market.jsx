@@ -600,6 +600,7 @@ export default function Market() {
                   onClick={() => {
                     setShowAddForm(false);
                     setFormError(null);
+                    resetForm();
                   }}
                   className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:text-gray-900"
                 >
@@ -614,20 +615,18 @@ export default function Market() {
                 </div>
               )}
 
-              <form onSubmit={handleCreateProduct} className="space-y-4">
+              <form onSubmit={handleFormSubmit(handleCreateProduct)} className="space-y-4">
                 <div>
                   <label className="block text-xs font-bold text-gray-500 uppercase mb-1.5">
                     Title *
                   </label>
                   <input
                     type="text"
-                    name="title"
-                    required
-                    value={formData.title}
-                    onChange={handleFormChange}
+                    {...register('title')}
                     placeholder="e.g. Fresh Organic Tomatoes"
-                    className="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500"
+                    className={`w-full px-4 py-2.5 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 ${formErrors.title ? 'border-red-300 bg-red-50' : 'border-gray-200'}`}
                   />
+                  {formErrors.title && <p className="text-xs text-red-600 mt-1">{formErrors.title.message}</p>}
                 </div>
 
                 <div>
@@ -635,13 +634,12 @@ export default function Market() {
                     Description
                   </label>
                   <textarea
-                    name="description"
-                    value={formData.description}
-                    onChange={handleFormChange}
+                    {...register('description')}
                     rows={3}
                     placeholder="Describe your product..."
-                    className="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 resize-none"
+                    className={`w-full px-4 py-2.5 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 resize-none ${formErrors.description ? 'border-red-300 bg-red-50' : 'border-gray-200'}`}
                   />
+                  {formErrors.description && <p className="text-xs text-red-600 mt-1">{formErrors.description.message}</p>}
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -651,15 +649,13 @@ export default function Market() {
                     </label>
                     <input
                       type="number"
-                      name="quantityKgOrUnits"
-                      required
+                      {...register('quantityKgOrUnits')}
                       min="0"
                       step="0.1"
-                      value={formData.quantityKgOrUnits}
-                      onChange={handleFormChange}
                       placeholder="e.g. 5"
-                      className="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500"
+                      className={`w-full px-4 py-2.5 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 ${formErrors.quantityKgOrUnits ? 'border-red-300 bg-red-50' : 'border-gray-200'}`}
                     />
+                    {formErrors.quantityKgOrUnits && <p className="text-xs text-red-600 mt-1">{formErrors.quantityKgOrUnits.message}</p>}
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-gray-500 uppercase mb-1.5">
@@ -667,15 +663,14 @@ export default function Market() {
                     </label>
                     <input
                       type="number"
-                      name="price"
+                      {...register('price')}
                       min="0"
                       step="0.01"
-                      value={formData.price}
-                      onChange={handleFormChange}
                       placeholder="0.00"
-                      disabled={formData.exchangeType === 'BARTER'}
-                      className="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 disabled:bg-gray-50 disabled:text-gray-400"
+                      disabled={watchedExchangeType === 'BARTER'}
+                      className={`w-full px-4 py-2.5 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 disabled:bg-gray-50 disabled:text-gray-400 ${formErrors.price ? 'border-red-300 bg-red-50' : 'border-gray-200'}`}
                     />
+                    {formErrors.price && <p className="text-xs text-red-600 mt-1">{formErrors.price.message}</p>}
                   </div>
                 </div>
 
@@ -685,30 +680,28 @@ export default function Market() {
                       Product Type *
                     </label>
                     <select
-                      name="productType"
-                      value={formData.productType}
-                      onChange={handleFormChange}
-                      className="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 bg-white"
+                      {...register('productType')}
+                      className={`w-full px-4 py-2.5 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 bg-white ${formErrors.productType ? 'border-red-300 bg-red-50' : 'border-gray-200'}`}
                     >
                       <option value="VEGETABLE">Vegetable</option>
                       <option value="FRUIT">Fruit</option>
                       <option value="SEED">Seed</option>
                       <option value="PLANT">Plant</option>
                     </select>
+                    {formErrors.productType && <p className="text-xs text-red-600 mt-1">{formErrors.productType.message}</p>}
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-gray-500 uppercase mb-1.5">
                       Exchange Type *
                     </label>
                     <select
-                      name="exchangeType"
-                      value={formData.exchangeType}
-                      onChange={handleFormChange}
-                      className="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 bg-white"
+                      {...register('exchangeType')}
+                      className={`w-full px-4 py-2.5 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 bg-white ${formErrors.exchangeType ? 'border-red-300 bg-red-50' : 'border-gray-200'}`}
                     >
                       <option value="SALE">For Sale</option>
                       <option value="BARTER">For Barter</option>
                     </select>
+                    {formErrors.exchangeType && <p className="text-xs text-red-600 mt-1">{formErrors.exchangeType.message}</p>}
                   </div>
                 </div>
 
@@ -717,13 +710,12 @@ export default function Market() {
                     Image URL
                   </label>
                   <input
-                    type="url"
-                    name="imageUrl"
-                    value={formData.imageUrl}
-                    onChange={handleFormChange}
+                    type="text"
+                    {...register('imageUrl')}
                     placeholder="https://example.com/image.jpg"
-                    className="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500"
+                    className={`w-full px-4 py-2.5 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 ${formErrors.imageUrl ? 'border-red-300 bg-red-50' : 'border-gray-200'}`}
                   />
+                  {formErrors.imageUrl && <p className="text-xs text-red-600 mt-1">{formErrors.imageUrl.message}</p>}
                 </div>
 
                 <div className="flex gap-3 pt-2">
@@ -733,6 +725,7 @@ export default function Market() {
                     onClick={() => {
                       setShowAddForm(false);
                       setFormError(null);
+                      resetForm();
                     }}
                     className="flex-1 rounded-full font-bold"
                   >
