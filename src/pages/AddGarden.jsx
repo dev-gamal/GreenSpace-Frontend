@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useAuth } from '../context/AuthContext';
 import { createGarden } from '../api/gardenService';
+import { gardenSchema } from '../validations/gardenSchema';
 import MapComponent from '../components/MapComponent';
 import { Leaf, MapPin, Ruler, Camera, CheckSquare, AlignLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -13,20 +16,35 @@ export default function AddGarden() {
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    areaSize: '',
-    address: '',
-    city: '',
-    postalCode: '',
-    rules: '',
-    hasTools: false,
-    photoUrls: '',
-    latitude: '',
-    longitude: ''
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(gardenSchema),
+    defaultValues: {
+      title: '',
+      description: '',
+      areaSize: '',
+      address: '',
+      city: '',
+      postalCode: '',
+      rules: '',
+      hasTools: false,
+      photoUrls: '',
+      latitude: '',
+      longitude: '',
+    },
   });
+
+  const latitude = watch('latitude');
+  const longitude = watch('longitude');
+  const address = watch('address');
+  const city = watch('city');
+  const hasTools = watch('hasTools');
 
   if (user?.role !== 'OWNER') {
     return (
@@ -38,36 +56,26 @@ export default function AddGarden() {
     );
   }
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const onSubmit = async (data) => {
     setLoading(true);
     setError('');
 
     try {
-      const photos = formData.photoUrls
-        .split(',')
-        .map((url) => url.trim())
-        .filter((url) => url.length > 0);
+      const photos = data.photoUrls
+        ? data.photoUrls.split(',').map((url) => url.trim()).filter((url) => url.length > 0)
+        : [];
 
       await createGarden({
-        title: formData.title,
-        description: formData.description,
-        areaSize: parseFloat(formData.areaSize),
-        address: formData.address,
-        city: formData.city,
-        postalCode: formData.postalCode,
-        rules: formData.rules,
-        hasTools: formData.hasTools,
-        latitude: parseFloat(formData.latitude) || null,
-        longitude: parseFloat(formData.longitude) || null,
+        title: data.title,
+        description: data.description,
+        areaSize: parseFloat(data.areaSize),
+        address: data.address,
+        city: data.city,
+        postalCode: data.postalCode,
+        rules: data.rules,
+        hasTools: data.hasTools,
+        latitude: data.latitude ? parseFloat(data.latitude) : null,
+        longitude: data.longitude ? parseFloat(data.longitude) : null,
         photoUrls: photos
       }, user.id);
 
@@ -81,8 +89,11 @@ export default function AddGarden() {
   };
 
   const inputClass = "w-full pl-10 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 text-sm";
+  const inputErrorClass = "w-full pl-10 py-3 bg-red-50 border border-red-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 text-sm";
   const textareaClass = "w-full pl-10 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 text-sm min-h-[100px]";
+  const textareaErrorClass = "w-full pl-10 py-3 bg-red-50 border border-red-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 text-sm min-h-[100px]";
   const labelClass = "block mb-1 text-xs font-semibold text-gray-700 uppercase tracking-wider";
+  const fieldError = "text-xs text-red-600 mt-1 pl-1";
 
   return (
     <div className="max-w-3xl mx-auto py-10 px-4">
@@ -107,7 +118,7 @@ export default function AddGarden() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="md:col-span-2">
@@ -116,14 +127,12 @@ export default function AddGarden() {
                   <Leaf className="absolute text-gray-400 left-3 top-3.5" size={16} />
                   <input
                     type="text"
-                    name="title"
-                    required
-                    value={formData.title}
-                    onChange={handleChange}
+                    {...register('title')}
                     placeholder="e.g. Sunny Backyard Plot"
-                    className={inputClass}
+                    className={errors.title ? inputErrorClass : inputClass}
                   />
                 </div>
+                {errors.title && <p className={fieldError}>{errors.title.message}</p>}
               </div>
               <div>
                 <label className={labelClass}>Area Size (m²) *</label>
@@ -131,16 +140,14 @@ export default function AddGarden() {
                   <Ruler className="absolute text-gray-400 left-3 top-3.5" size={16} />
                   <input
                     type="number"
-                    name="areaSize"
-                    required
+                    {...register('areaSize')}
                     min="1"
                     step="0.1"
-                    value={formData.areaSize}
-                    onChange={handleChange}
                     placeholder="e.g. 25"
-                    className={inputClass}
+                    className={errors.areaSize ? inputErrorClass : inputClass}
                   />
                 </div>
+                {errors.areaSize && <p className={fieldError}>{errors.areaSize.message}</p>}
               </div>
             </div>
 
@@ -149,13 +156,12 @@ export default function AddGarden() {
               <div className="relative">
                 <AlignLeft className="absolute text-gray-400 left-3 top-3.5" size={16} />
                 <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
+                  {...register('description')}
                   placeholder="Describe your garden space, sunlight, soil quality..."
-                  className={textareaClass}
+                  className={errors.description ? textareaErrorClass : textareaClass}
                 />
               </div>
+              {errors.description && <p className={fieldError}>{errors.description.message}</p>}
             </div>
 
             <hr className="border-gray-100" />
@@ -169,13 +175,12 @@ export default function AddGarden() {
                   <MapPin className="absolute text-gray-400 left-3 top-3.5" size={16} />
                   <input
                     type="text"
-                    name="address"
-                    value={formData.address}
-                    onChange={handleChange}
+                    {...register('address')}
                     placeholder="123 Green Avenue"
-                    className={inputClass}
+                    className={errors.address ? inputErrorClass : inputClass}
                   />
                 </div>
+                {errors.address && <p className={fieldError}>{errors.address.message}</p>}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -185,14 +190,12 @@ export default function AddGarden() {
                     <MapPin className="absolute text-gray-400 left-3 top-3.5" size={16} />
                     <input
                       type="text"
-                      name="city"
-                      required
-                      value={formData.city}
-                      onChange={handleChange}
+                      {...register('city')}
                       placeholder="e.g. Casablanca"
-                      className={inputClass}
+                      className={errors.city ? inputErrorClass : inputClass}
                     />
                   </div>
+                  {errors.city && <p className={fieldError}>{errors.city.message}</p>}
                 </div>
                 <div>
                   <label className={labelClass}>Postal Code</label>
@@ -200,13 +203,12 @@ export default function AddGarden() {
                     <MapPin className="absolute text-gray-400 left-3 top-3.5" size={16} />
                     <input
                       type="text"
-                      name="postalCode"
-                      value={formData.postalCode}
-                      onChange={handleChange}
+                      {...register('postalCode')}
                       placeholder="e.g. 20000"
-                      className={inputClass}
+                      className={errors.postalCode ? inputErrorClass : inputClass}
                     />
                   </div>
+                  {errors.postalCode && <p className={fieldError}>{errors.postalCode.message}</p>}
                 </div>
               </div>
 
@@ -215,19 +217,23 @@ export default function AddGarden() {
                 <p className="text-xs text-gray-500 mb-2">Click on the map to set the exact latitude and longitude instead of entering an address manually.</p>
                 <div className="w-full h-64 bg-gray-200 rounded-2xl overflow-hidden mb-3">
                   <MapComponent 
-                    address={formData.address}
-                    city={formData.city}
-                    lat={formData.latitude}
-                    lng={formData.longitude}
+                    address={address}
+                    city={city}
+                    lat={latitude}
+                    lng={longitude}
                     onLocationSelect={(lat, lng) => {
-                      setFormData(prev => ({ ...prev, latitude: lat, longitude: lng }));
+                      setValue('latitude', lat, { shouldValidate: true });
+                      setValue('longitude', lng, { shouldValidate: true });
                     }}
                   />
                 </div>
-                {formData.latitude && formData.longitude && (
+                {latitude && longitude && (
                   <p className="text-xs font-semibold text-green-700">
-                    Selected Location: {Number(formData.latitude).toFixed(5)}, {Number(formData.longitude).toFixed(5)}
+                    Selected Location: {Number(latitude).toFixed(5)}, {Number(longitude).toFixed(5)}
                   </p>
+                )}
+                {(errors.latitude || errors.longitude) && (
+                  <p className={fieldError}>{errors.latitude?.message || errors.longitude?.message}</p>
                 )}
               </div>
             </div>
@@ -242,13 +248,12 @@ export default function AddGarden() {
                 <div className="relative">
                   <CheckSquare className="absolute text-gray-400 left-3 top-3.5" size={16} />
                   <textarea
-                    name="rules"
-                    value={formData.rules}
-                    onChange={handleChange}
+                    {...register('rules')}
                     placeholder="e.g. Organic farming only, no loud noises..."
-                    className={textareaClass}
+                    className={errors.rules ? textareaErrorClass : textareaClass}
                   />
                 </div>
+                {errors.rules && <p className={fieldError}>{errors.rules.message}</p>}
               </div>
 
               <div>
@@ -257,23 +262,21 @@ export default function AddGarden() {
                   <Camera className="absolute text-gray-400 left-3 top-3.5" size={16} />
                   <input
                     type="text"
-                    name="photoUrls"
-                    value={formData.photoUrls}
-                    onChange={handleChange}
+                    {...register('photoUrls')}
                     placeholder="https://image1.jpg, https://image2.jpg"
-                    className={inputClass}
+                    className={errors.photoUrls ? inputErrorClass : inputClass}
                   />
                   <p className="text-xs text-gray-500 mt-1 pl-1">Separate multiple image URLs with commas</p>
                 </div>
+                {errors.photoUrls && <p className={fieldError}>{errors.photoUrls.message}</p>}
               </div>
 
               <div className="flex items-center gap-3 bg-green-50 p-4 rounded-xl border border-green-100 mt-4">
                 <input
                   type="checkbox"
                   id="hasTools"
-                  name="hasTools"
-                  checked={formData.hasTools}
-                  onChange={handleChange}
+                  {...register('hasTools')}
+                  checked={hasTools}
                   className="w-5 h-5 text-green-600 rounded border-gray-300 focus:ring-green-500 cursor-pointer"
                 />
                 <label htmlFor="hasTools" className="text-sm font-medium text-green-900 cursor-pointer">

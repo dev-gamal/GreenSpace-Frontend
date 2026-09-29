@@ -1,4 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { productSchema } from '../validations/productSchema';
 import {
   Search,
   MapPin,
@@ -64,15 +67,26 @@ export default function Market() {
   const [formLoading, setFormLoading] = useState(false);
   const [formError, setFormError] = useState(null);
 
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    quantityKgOrUnits: '',
-    price: '',
-    productType: 'VEGETABLE',
-    exchangeType: 'SALE',
-    imageUrl: '',
+  const {
+    register,
+    handleSubmit: handleFormSubmit,
+    watch,
+    reset: resetForm,
+    formState: { errors: formErrors },
+  } = useForm({
+    resolver: yupResolver(productSchema),
+    defaultValues: {
+      title: '',
+      description: '',
+      quantityKgOrUnits: '',
+      price: '',
+      productType: 'VEGETABLE',
+      exchangeType: 'SALE',
+      imageUrl: '',
+    },
   });
+
+  const watchedExchangeType = watch('exchangeType');
 
   const canPublish = user?.role === 'GARDENER';
   const canDelete = (product) =>
@@ -158,39 +172,25 @@ export default function Market() {
     }
   };
 
-  const handleFormChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleCreateProduct = async (e) => {
-    e.preventDefault();
+  const handleCreateProduct = async (data) => {
     setFormLoading(true);
     setFormError(null);
 
     try {
       const payload = {
-        title: formData.title,
-        description: formData.description,
-        quantityKgOrUnits: parseFloat(formData.quantityKgOrUnits),
-        price: formData.exchangeType === 'SALE' ? parseFloat(formData.price || 0) : 0,
-        productType: formData.productType,
-        exchangeType: formData.exchangeType,
+        title: data.title,
+        description: data.description,
+        quantityKgOrUnits: parseFloat(data.quantityKgOrUnits),
+        price: data.exchangeType === 'SALE' ? parseFloat(data.price || 0) : 0,
+        productType: data.productType,
+        exchangeType: data.exchangeType,
       };
 
-      await createProduct(payload, user.id, formData.imageUrl || DEFAULT_IMAGE);
+      await createProduct(payload, user.id, data.imageUrl || DEFAULT_IMAGE);
 
-      setExchangeType(formData.exchangeType);
+      setExchangeType(data.exchangeType);
       setShowAddForm(false);
-      setFormData({
-        title: '',
-        description: '',
-        quantityKgOrUnits: '',
-        price: '',
-        productType: 'VEGETABLE',
-        exchangeType: 'SALE',
-        imageUrl: '',
-      });
+      resetForm();
       setPage(0);
       setRefreshKey((k) => k + 1);
     } catch (err) {
